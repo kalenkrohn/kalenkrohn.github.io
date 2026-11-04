@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Groundhog Day Prediction Search</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #1f1d1a;
+      --muted: #6b665f;
+      --line: #e2ddd4;
+      --card: #fbf8f3;
+      --accent: #d00000;
+      --shadow: #2f6db5;   /* saw shadow: six more weeks of winter */
+      --noshadow: #e08a00; /* no shadow: early spring */
+      --none: #d9d4cb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1b1a18; --text: #f1ede6; --muted: #a8a299; --line: #3a3733; --card: #242220;
+        --accent: #ff6b6b; --shadow: #6ea8ec; --noshadow: #f0a52e; --none: #44403a;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); }
+    body { font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; padding: 16px; }
+    h1 { font-size: 1.5rem; margin: 0 0 4px; }
+    .lede { margin: 0 0 16px; color: var(--muted); font-size: .95rem; }
+    .controls { display: grid; gap: 12px; grid-template-columns: 2fr 1fr 1fr 1fr; align-items: end; }
+    label { display: block; font-size: .8rem; font-weight: 600; margin-bottom: 4px; }
+    input, select, button { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%; }
+    input:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 8px 16px; justify-content: space-between; align-items: center; margin: 16px 0 8px; font-size: .9rem; color: var(--muted); }
+    .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+    .sw { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: -1px; margin-right: 4px; }
+    .sw.s { background: var(--shadow); } .sw.n { background: var(--noshadow); } .sw.x { background: var(--none); }
+    ul.results { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+    .card h2 { font-size: 1.1rem; margin: 0; }
+    .sub { color: var(--muted); font-size: .9rem; margin: 2px 0 10px; }
+    .tag { display: inline-block; font-size: .72rem; font-weight: 600; border: 1px solid var(--line); border-radius: 99px; padding: 0 8px; margin-left: 6px; vertical-align: 2px; color: var(--muted); }
+    .stats { display: flex; flex-wrap: wrap; gap: 4px 20px; font-size: .9rem; margin-bottom: 8px; }
+    .stats b { font-variant-numeric: tabular-nums; }
+    .bar { display: flex; height: 10px; border-radius: 5px; overflow: hidden; background: var(--none); margin-bottom: 10px; }
+    .bar i { display: block; height: 100%; }
+    .bar .s { background: var(--shadow); } .bar .n { background: var(--noshadow); }
+    .strip { display: flex; flex-wrap: wrap; gap: 3px; }
+    .strip span { width: 14px; height: 14px; border-radius: 2px; background: var(--none); }
+    .strip .s { background: var(--shadow); } .strip .n { background: var(--noshadow); }
+    .range { display: flex; justify-content: space-between; font-size: .72rem; color: var(--muted); margin-top: 3px; }
+    a { color: var(--accent); }
+    .empty, .err { padding: 24px; text-align: center; color: var(--muted); border: 1px dashed var(--line); border-radius: 8px; }
+    #more { margin: 16px auto 0; display: block; width: auto; cursor: pointer; font-weight: 600; }
+    .note { margin-top: 16px; font-size: .8rem; color: var(--muted); }
+    @media (max-width: 640px) { .controls { grid-template-columns: 1fr 1fr; } .controls > :first-child { grid-column: 1 / -1; } }
+  </style>
+</head>
+<body>
+  <h1>Groundhog Day Prediction Search</h1>
+  <p class="lede">Look up a weather prognosticator and see its prediction history since 1990.</p>
+
+  <form class="controls" role="search" onsubmit="return false">
+    <div><label for="q">Name or city</label><input id="q" type="search" placeholder="e.g. Phil, Punxsutawney" autocomplete="off"></div>
+    <div><label for="region">State / province</label><select id="region"><option value="">All</option></select></div>
+    <div><label for="type">Type of creature</label><select id="type"><option value="">All</option></select></div>
+    <div><label for="sort">Sort by</label>
+      <select id="sort">
+        <option value="name">Name (A–Z)</option>
+        <option value="count">Most predictions</option>
+        <option value="shadow">Most shadows seen</option>
+      </select>
+    </div>
+  </form>
+
+  <div class="meta">
+    <span id="count" aria-live="polite">Loading…</span>
+    <span class="legend" aria-hidden="true">
+      <span><i class="sw s"></i>Shadow (6 more weeks of winter)</span>
+      <span><i class="sw n"></i>No shadow (early spring)</span>
+      <span><i class="sw x"></i>No prediction recorded</span>
+    </span>
+  </div>
+
+  <ul class="results" id="results"></ul>
+  <button id="more" type="button" hidden>Show more</button>
+  <p class="note">Data: <a href="https://groundhog-day.com" target="_blank" rel="noopener">groundhog-day.com</a>. “Track record” shows each predictor’s recorded call per year; the dataset has no verified weather outcome, so it does not score accuracy.</p>
+
+<script>
+(function () {
+  var URL = 'https://the-art-of-data-journalism.github.io/tutorial-data/groundhogs/predictions.csv';
+  var PAGE = 20;
+  var MIN_YEAR = 1990, MAX_YEAR = 2026;
+  var $ = function (id) { return document.getElementById(id); };
+  var predictors = [], shown = PAGE;
+
+  function parseCSV(text) {
+    var rows = [], row = [], f = '', q = false, i = 0, c;
+    for (; i < text.length; i++) {
+      c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; }
+        else f += c;
+      } else if (c === '"') q = true;
+      else if (c === ',') { row.push(f); f = ''; }
+      else if (c === '\n' || c === '\r') {
+        if (c === '\r' && text[i + 1] === '\n') i++;
+        row.push(f); f = ''; rows.push(row); row = [];
+      } else f += c;
+    }
+    if (f || row.length) { row.push(f); rows.push(row); }
+    var head = rows.shift();
+    return rows.filter(function (r) { return r.length === head.length; }).map(function (r) {
+      var o = {}; head.forEach(function (h, k) { o[h] = r[k]; }); return o;
+    });
+  }
+
+  function build(rows) {
+    var by = {};
+    rows.forEach(function (r) {
+      var p = by[r.id] || (by[r.id] = { id: r.id, name: r.name, city: r.city, region: r.region, country: r.country,
+        type: r.type, active: r.active === '1', slug: r.slug, calls: {}, latest: 0 });
+      var y = +r.year;
+      p.calls[y] = r.shadow === '1' ? 's' : r.shadow === '0' ? 'n' : 'x';
+      if (y >= p.latest) { p.latest = y; p.name = r.name; p.city = r.city; p.region = r.region; p.type = r.type; p.active = r.active === '1'; }
+    });
+    return Object.keys(by).map(function (id) {
+      var p = by[id], s = 0, n = 0;
+      Object.keys(p.calls).forEach(function (y) { if (p.calls[y] === 's') s++; else if (p.calls[y] === 'n') n++; });
+      p.shadow = s; p.noshadow = n; p.total = s + n;
+      p.first = Math.min.apply(null, Object.keys(p.calls));
+      p.hay = (p.name + ' ' + p.city + ' ' + p.region).toLowerCase();
+      return p;
+    });
+  }
+
+  function fillSelect(el, values) {
+    values.forEach(function (v) { var o = document.createElement('option'); o.value = v; o.textContent = v; el.appendChild(o); });
+  }
+  function uniq(key) {
+    var seen = {}; predictors.forEach(function (p) { seen[p[key]] = 1; });
+    return Object.keys(seen).filter(Boolean).sort();
+  }
+
+  function pct(a, b) { return b ? Math.round(a / b * 100) : 0; }
+
+  function card(p) {
+    var li = document.createElement('li'); li.className = 'card';
+    var h = document.createElement('h2'); h.textContent = p.name;
+    if (!p.active) { var t = document.createElement('span'); t.className = 'tag'; t.textContent = 'Retired'; h.appendChild(t); }
+    var sub = document.createElement('p'); sub.className = 'sub';
+    sub.textContent = [p.city, p.region, p.country].filter(Boolean).join(', ') + ' · ' + p.type;
+
+    var stats = document.createElement('div'); stats.className = 'stats';
+    stats.innerHTML = '<span><b>' + p.total + '</b> predictions</span>' +
+      '<span><b>' + p.shadow + '</b> shadow (' + pct(p.shadow, p.total) + '%)</span>' +
+      '<span><b>' + p.noshadow + '</b> no shadow (' + pct(p.noshadow, p.total) + '%)</span>';
+
+    var bar = document.createElement('div'); bar.className = 'bar';
+    bar.innerHTML = '<i class="s" style="width:' + pct(p.shadow, p.total) + '%"></i><i class="n" style="width:' + pct(p.noshadow, p.total) + '%"></i>';
+    bar.setAttribute('aria-hidden', 'true');
+
+    var strip = document.createElement('div'); strip.className = 'strip';
+    strip.setAttribute('role', 'img');
+    strip.setAttribute('aria-label', p.name + ' year-by-year predictions, ' + MIN_YEAR + ' to ' + MAX_YEAR + ': ' + p.shadow + ' shadow, ' + p.noshadow + ' no shadow.');
+    var labels = { s: 'saw shadow', n: 'no shadow', x: 'no prediction recorded' };
+    for (var y = MIN_YEAR; y <= MAX_YEAR; y++) {
+      var c = p.calls[y] || 'x', sp = document.createElement('span');
+      if (c !== 'x') sp.className = c;
+      sp.title = y + ': ' + labels[c];
+      strip.appendChild(sp);
+    }
+    var range = document.createElement('div'); range.className = 'range';
+    range.innerHTML = '<span>' + MIN_YEAR + '</span><span>' + MAX_YEAR + '</span>';
+
+    [h, sub, stats, bar, strip, range].forEach(function (e) { li.appendChild(e); });
+    return li;
+  }
+
+  function render() {
+    var q = $('q').value.trim().toLowerCase(), region = $('region').value, type = $('type').value, sort = $('sort').value;
+    var list = predictors.filter(function (p) {
+      return (!q || p.hay.indexOf(q) !== -1) && (!region || p.region === region) && (!type || p.type === type);
+    });
+    list.sort(function (a, b) {
+      if (sort === 'count') return b.total - a.total || a.name.localeCompare(b.name);
+      if (sort === 'shadow') return pct(b.shadow, b.total) - pct(a.shadow, a.total) || b.total - a.total;
+      return a.name.localeCompare(b.name);
+    });
+    var out = $('results'); out.innerHTML = '';
+    $('count').textContent = list.length + (list.length === 1 ? ' predictor' : ' predictors');
+    if (!list.length) {
+      var e = document.createElement('li'); e.className = 'empty'; e.textContent = 'No predictors match your search.'; out.appendChild(e);
+    }
+    list.slice(0, shown).forEach(function (p) { out.appendChild(card(p)); });
+    $('more').hidden = list.length <= shown;
+    $('more').textContent = 'Show more (' + (list.length - shown) + ' remaining)';
+    notifyHeight();
+  }
+
+  // Lets a parent CMS page resize the iframe: window.addEventListener('message', e => e.data.type === 'groundhog-height' && (iframe.style.height = e.data.height + 'px'))
+  function notifyHeight() {
+    if (window.parent === window) return;
+    window.parent.postMessage({ type: 'groundhog-height', height: document.documentElement.scrollHeight }, '*');
+  }
+
+  function reset() { shown = PAGE; render(); }
+
+  fetch(URL).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); }).then(function (t) {
+    predictors = build(parseCSV(t));
+    fillSelect($('region'), uniq('region'));
+    fillSelect($('type'), uniq('type'));
+    $('q').addEventListener('input', reset);
+    $('region').addEventListener('change', reset);
+    $('type').addEventListener('change', reset);
+    $('sort').addEventListener('change', reset);
+    $('more').addEventListener('click', function () { shown += PAGE; render(); });
+    render();
+  }).catch(function () {
+    $('count').textContent = '';
+    var e = document.createElement('li'); e.className = 'err'; e.textContent = 'Could not load the prediction data. Please try again later.';
+    $('results').appendChild(e);
+    notifyHeight();
+  });
+
+  window.addEventListener('resize', notifyHeight);
+})();
+</script>
+</body>
+</html>
