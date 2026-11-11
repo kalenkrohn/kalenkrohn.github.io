@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Daily Cross</title>
+  <meta name="color-scheme" content="light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto+Condensed:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #ba1f1f;        /* DN section-header red */
+      --red-dark: #8f1717;
+      --ink: #333333;        /* DN body text / nav */
+      --muted: #6b6b6b;
+      --line: #dcdcdc;
+      --wash: #f4f4f4;
+      --word: #fbe3e3;       /* highlighted word */
+      --active: #f3b3b3;     /* selected cell */
+      --head: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
+      --body: "Open Sans", Arial, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #fff; color: var(--ink); }
+    body { font: 14px/1.5 var(--body); }
+    .app { max-width: 820px; margin: 0 auto; }
+
+    .bar { background: var(--ink); color: #fff; padding: 10px 16px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-bottom: 3px solid var(--red); }
+    .bar h1 { font: 700 26px/1.1 var(--head); margin: 0; letter-spacing: .2px; }
+    .bar h1 small { font: 700 13px var(--head); text-transform: uppercase; letter-spacing: .8px; color: #f6d9d9; margin-left: 8px; }
+    .bar .meta { font-size: 12px; color: #c9c9c9; display: flex; gap: 14px; align-items: baseline; }
+    .bar .timer { font: 700 15px var(--head); color: #fff; font-variant-numeric: tabular-nums; }
+
+    .intro { padding: 10px 16px 0; font-size: 13px; color: var(--muted); margin: 0; }
+
+    .board { padding: 14px 16px 6px; display: grid; grid-template-columns: auto 1fr; gap: 22px; align-items: start; }
+    .grid-wrap { width: var(--gw); max-width: 100%; justify-self: center; }
+    .grid { display: grid; grid-template-columns: repeat(var(--cols), 1fr); border: 2px solid var(--ink); background: var(--ink); gap: 1px; }
+    .cell { position: relative; aspect-ratio: 1; background: var(--ink); }
+    .cell.open { background: #fff; cursor: pointer; }
+    .cell.open.inword { background: var(--word); }
+    .cell.open.active { background: var(--active); box-shadow: inset 0 0 0 2px var(--red); }
+    .cell.open.wrong { background: var(--red); }
+    .cell.open.wrong input { color: #fff; }
+    .cell.open.wrong .num { color: #fff; }
+    .cell.open.active.wrong { box-shadow: inset 0 0 0 3px var(--ink); }
+    .cell.solved { background: #e9f4ec !important; }
+    .num { position: absolute; top: 1px; left: 3px; font: 600 10px/1 var(--body); color: var(--ink); pointer-events: none; z-index: 1; }
+    .cell input { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 10% 0 0; margin: 0; background: transparent; text-align: center; text-transform: uppercase; font: 700 clamp(16px, 4.2vw, 22px)/1 var(--head); color: var(--ink); caret-color: transparent; border-radius: 0; cursor: pointer; }
+    .cell input:focus { outline: none; }
+    .cell.revealed::after { content: ""; position: absolute; top: 0; right: 0; border-style: solid; border-width: 0 9px 9px 0; border-color: transparent var(--red) transparent transparent; }
+    .cell.revealed.wrong::after { border-color: transparent #fff transparent transparent; }
+
+    .clues { display: grid; gap: 16px; min-width: 0; }
+    .clues h3 { font: 700 13px var(--head); text-transform: uppercase; letter-spacing: .6px; margin: 0 0 4px; padding-bottom: 4px; border-bottom: 2px solid var(--ink); }
+    .clues ol { list-style: none; margin: 0; padding: 0; }
+    .clues li { padding: 5px 8px; font-size: 13px; line-height: 1.4; cursor: pointer; border-left: 3px solid transparent; display: flex; gap: 8px; }
+    .clues li b { font-weight: 700; min-width: 18px; text-align: right; }
+    .clues li:hover { background: var(--wash); }
+    .clues li.on { background: var(--word); border-left-color: var(--red); }
+    .clues li.done { color: #9a9a9a; }
+    .clues li.done span { text-decoration: line-through; }
+
+    /* Sticky bottom dock: current clue + controls */
+    .dock { position: sticky; bottom: 0; z-index: 5; background: #fff; border-top: 3px solid var(--red); box-shadow: 0 -4px 12px rgba(0,0,0,.08); }
+    .cluebar { display: flex; align-items: stretch; min-height: 64px; }
+    .cluebar button.nav { flex: 0 0 40px; border: 0; background: var(--wash); color: var(--ink); font-size: 20px; cursor: pointer; }
+    .cluebar button.nav:hover { background: #e6e6e6; color: var(--red); }
+    .clue-body { flex: 1; padding: 8px 12px; min-width: 0; }
+    .clue-tag { display: inline-block; background: var(--red); color: #fff; font: 700 12px/1 var(--head); text-transform: uppercase; letter-spacing: .6px; padding: 4px 7px; margin-right: 8px; vertical-align: 2px; }
+    .clue-text { font-size: 15px; font-weight: 600; }
+    .clue-hint { margin: 4px 0 0; font-size: 13px; color: var(--red-dark); }
+    .clue-hint b { font: 700 12px var(--head); text-transform: uppercase; letter-spacing: .6px; }
+
+    .controls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border-top: 1px solid var(--line); }
+    .controls button { border: 0; background: #fff; padding: 12px 8px; font: 700 15px var(--head); text-transform: uppercase; letter-spacing: .6px; color: var(--ink); cursor: pointer; }
+    .controls button:hover:not(:disabled) { background: var(--wash); color: var(--red); }
+    .controls button:disabled { color: #b5b5b5; cursor: not-allowed; }
+    .controls .primary { background: var(--red); color: #fff; }
+    .controls .primary:hover:not(:disabled) { background: var(--red-dark); color: #fff; }
+    .pips { display: inline-flex; gap: 3px; margin-left: 6px; vertical-align: 1px; }
+    .pips i { width: 8px; height: 8px; border-radius: 50%; background: var(--red); display: inline-block; }
+    .pips i.used { background: var(--line); }
+    .status { padding: 6px 12px; font-size: 13px; text-align: center; min-height: 0; }
+    .status:empty { display: none; }
+    .status.bad { background: #fdecec; color: var(--red-dark); }
+    .status.good { background: #e9f4ec; color: #1d7a3c; font-weight: 600; }
+
+    .foot { padding: 10px 16px 14px; font-size: 11px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 14px; }
+
+    @media (max-width: 760px) {
+      .board { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+      .bar h1 { font-size: 22px; }
+      .bar h1 small { display: block; margin: 2px 0 0; }
+      .controls button { font-size: 14px; padding: 12px 4px; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="bar">
+    <h1>The Daily Cross<small>A Daily Nebraskan crossword</small></h1>
+    <div class="meta"><span>All answers have UNL ties</span><span class="timer" id="timer" aria-label="Time elapsed">0:00</span></div>
+  </header>
+  <p class="intro">Tap a square to see its clue. Tap it again to switch between Across and Down.</p>
+
+  <div class="board">
+    <div class="grid-wrap" id="gridWrap"><div class="grid" id="grid" role="grid" aria-label="Crossword grid"></div></div>
+    <div class="clues">
+      <div><h3>Across</h3><ol id="acrossList"></ol></div>
+      <div><h3>Down</h3><ol id="downList"></ol></div>
+    </div>
+  </div>
+
+  <div class="dock">
+    <div class="cluebar">
+      <button class="nav" id="prev" type="button" aria-label="Previous clue">&lsaquo;</button>
+      <div class="clue-body" aria-live="polite">
+        <span class="clue-tag" id="clueTag"></span><span class="clue-text" id="clueText"></span>
+        <p class="clue-hint" id="clueHint" hidden></p>
+      </div>
+      <button class="nav" id="next" type="button" aria-label="Next clue">&rsaquo;</button>
+    </div>
+    <div class="status" id="status" role="status"></div>
+    <div class="controls">
+      <button type="button" id="checkBtn" class="primary">Check</button>
+      <button type="button" id="hintBtn">Hint<span class="pips" id="pips"></span></button>
+      <button type="button" id="newBtn">New Puzzle</button>
+    </div>
+  </div>
+
+  <p class="foot">Hints show a bonus clue and fill in one letter of the selected word (marked with a red corner). You get 3 per puzzle.</p>
+</div>
+
+<script>
+// ---------------------------------------------------------------------------
+// Word bank: [ANSWER, clue, bonus hint]. Answers are letters only, max 12.
+// ---------------------------------------------------------------------------
+const BANK = [
+  // Coaches & athletes
+  ["OSBORNE", "Coach who led the Huskers to national titles in 1994, '95 and '97", "First name Tom; he later served in Congress"],
+  ["DEVANEY", "Coach who won Nebraska's first two football national championships", "Bob ___ Sports Center is named for him"],
+  ["FROST", "QB of the 1997 title team who later returned as head coach", "Scott ___ — also a cold-weather word"],
+  ["RHULE", "Matt ___, Husker head football coach hired in 2022", "He previously coached Baylor and the Carolina Panthers"],
+  ["RODGERS", "Johnny ___, Nebraska's first Heisman Trophy winner (1972)", "Nicknamed \"The Jet\""],
+  ["CROUCH", "Eric ___, Husker QB who won the 2001 Heisman", "Famous for catching a trick-play TD pass against Oklahoma"],
+  ["ROZIER", "Mike ___, running back who won the 1983 Heisman", "Starred on the 1983 \"Scoring Explosion\" offense"],
+  ["SUH", "Ndamukong ___, dominant Husker defensive tackle of 2009", "Just three letters"],
+  ["COOK", "John ___, volleyball coach who won four national titles at Nebraska", "Also what you do in a kitchen"],
+  ["HOIBERG", "Fred ___, Husker men's basketball coach hired in 2019", "Former Iowa State star nicknamed \"The Mayor\""],
+  // Famous alumni & academics
+  ["CATHER", "Willa ___, Pulitzer-winning novelist and 1895 UNL graduate", "Wrote \"My Ántonia\" and \"O Pioneers!\""],
+  ["CARSON", "Johnny ___, 1949 grad whose name is on UNL's Center for Emerging Media Arts", "Longtime host of \"The Tonight Show\""],
+  ["BUFFETT", "Warren ___, investor who earned his bachelor's degree at UNL", "The \"Oracle of Omaha\""],
+  ["PERSHING", "Gen. John J. ___, who taught military science at UNL in the 1890s", "He commanded U.S. forces in World War I"],
+  ["POUND", "Roscoe ___, UNL alum who became dean of Harvard Law School", "Also a unit of weight; a residence hall bears the name"],
+  ["BEADLE", "George ___, UNL alum who won a Nobel Prize in 1958", "A campus research center honors this geneticist"],
+  ["CLIFTON", "Donald ___, UNL psychology professor who created StrengthsFinder", "He later led the Gallup polling company"],
+  ["BENNETT", "Rodney ___, UNL chancellor since 2023", "A common surname — think Tony ___, the singer"],
+  // Game-day traditions
+  ["MEMORIAL", "___ Stadium, home of Husker football since 1923", "On game days it's called the state's \"third-largest city\""],
+  ["SELLOUT", "Nebraska's NCAA-record streak of these began in 1962", "Every seat sold"],
+  ["BLACKSHIRTS", "Nickname of the Husker defense", "Named for practice jerseys handed out in the 1960s"],
+  ["TUNNELWALK", "Pregame entrance set to \"Sirius\" by the Alan Parsons Project", "Players emerge from beneath the stands (one word)"],
+  ["BALLOONS", "Fans release red ones after Nebraska's first score", "Filled with helium"],
+  ["HERBIE", "___ Husker, the costumed mascot in a cowboy hat", "Shares a name with a famous Volkswagen Beetle"],
+  ["LILRED", "Inflatable Husker mascot (no apostrophe)", "Sounds like \"little\" + the school color"],
+  ["SEAOFRED", "What Memorial Stadium becomes when fans fill it (3 words)", "Ocean + preposition + school color"],
+  ["GOBIGRED", "Classic Husker rallying cry (3 words)", "Go, ___, ___ — the last word is a color"],
+  ["SCARLET", "One of UNL's two official colors", "A deep shade of red"],
+  ["CREAM", "Scarlet and ___", "Something you might add to coffee"],
+  ["CORNHUSKERS", "Full nickname of Nebraska's athletic teams", "Often shortened to \"Huskers\""],
+  ["BIGTEN", "Conference Nebraska joined in 2011", "The number in its name no longer matches its membership"],
+  ["ORANGE", "Bowl where Nebraska sealed its 1970 and 1971 national titles", "A citrus fruit and a color"],
+  ["OKLAHOMA", "Rival in the 1971 \"Game of the Century\"", "The Sooner State"],
+  ["RUNZA", "Nebraska sandwich chain and game-day staple", "A bread pocket filled with beef, cabbage and onions"],
+  ["VOLLEYBALL", "Sport that drew a world-record 92,003 fans to Memorial Stadium in 2023", "Played over a net with bumps, sets and spikes"],
+  ["BOWLING", "Women's sport in which Nebraska has won several NCAA titles", "Strikes and spares"],
+  ["PRIDE", "The Cornhusker Marching Band is \"The ___ of All Nebraska\"", "A group of lions"],
+  // Campus places
+  ["LOVE", "Don L. ___ Memorial Library on City Campus", "A Valentine's Day word"],
+  ["MORRILL", "___ Hall, home of the University of Nebraska State Museum", "Nicknamed \"Elephant Hall\""],
+  ["ARCHIE", "Name of the giant mammoth skeleton in Morrill Hall", "Shares a name with a comic book teen from Riverdale"],
+  ["SHELDON", "___ Museum of Art, designed by architect Philip Johnson", "Also the first name of a \"Big Bang Theory\" physicist"],
+  ["LIED", "___ Center for Performing Arts", "Pronounced \"leed\""],
+  ["AVERY", "___ Hall, longtime home of UNL computing classes", "Also a popular first name"],
+  ["ANDREWS", "___ Hall, home of UNL's English department", "Named for former chancellor E. Benjamin ___"],
+  ["OLDFATHER", "___ Hall, the social-sciences tower on City Campus", "Not young + male parent"],
+  ["HAMILTON", "___ Hall, UNL's chemistry building", "Shares a name with a Broadway hit"],
+  ["CANFIELD", "___ Administration Building, home of the chancellor's office", "A container + a meadow"],
+  ["BROYHILL", "___ Fountain, outside the Nebraska Union", "Named for the family that donated it"],
+  ["SELLECK", "___ Quadrangle, a residence hall complex on City Campus", "Also the surname of \"Magnum, P.I.\" actor Tom"],
+  ["ABEL", "___ Hall, one of the tallest residence halls on campus", "Biblical brother of Cain"],
+  ["MABELLEE", "___ Hall, named for a pioneering women's P.E. director (2 words)", "First name rhymes with \"table\""],
+  ["UNION", "Nebraska ___, the student hub on City Campus", "Also a word for an organized group of workers"],
+  ["EASTCAMPUS", "Home of UNL's agricultural college and the Dairy Store (2 words)", "Opposite of west + college grounds"],
+  ["DAIRYSTORE", "East Campus spot famous for its ice cream (2 words)", "Scooping since 1917"],
+  ["INNOVATION", "Nebraska ___ Campus, built on the old state fairgrounds", "A synonym for new ideas"],
+  ["HAYMARKET", "Historic Lincoln district beside Pinnacle Bank Arena", "Named for where farmers once sold animal feed"],
+  ["PINNACLE", "___ Bank Arena, home of Husker basketball", "A synonym for peak"],
+  ["LINCOLN", "Capital city home to UNL's main campuses", "Shares a name with the 16th president"],
+  ["HIXSON", "___-Lied College of Fine and Performing Arts", "Rhymes with \"Nixon\""],
+  ["KORFF", "Glenn ___ School of Music", "Rhymes with \"scoff\""],
+  // Majors & academics
+  ["JOURNALISM", "Major for many Daily Nebraskan staffers", "College of ___ and Mass Communications"],
+  ["ACTUARIAL", "___ science, a UNL program for math whizzes who study risk", "Think insurance and statistics"],
+  ["AGRONOMY", "Study of crops and soils, taught on East Campus", "From the Greek word for \"field\""],
+  ["ARCHITECTURE", "UNL college whose home hall was once the university library", "Designing buildings"],
+  ["RAIKES", "Jeffrey S. ___ School of Computer Science and Management", "Named for a former Microsoft executive"],
+  ["NEBRASKAN", "The Daily ___, UNL's student newspaper since 1901", "Someone from the Cornhusker State"],
+  ["CHANCELLOR", "Title of UNL's top campus leader", "Germany's head of government has the same title"],
+];
+
+// ---------------------------------------------------------------------------
+// Generator
+// ---------------------------------------------------------------------------
+const SIZE = 13;
+const TARGET = 13;
+
+function shuffle(a) {
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+
+function attempt() {
+  const g = Array.from({ length: SIZE }, () => Array.from({ length: SIZE }, () => ({ ch: null, a: false, d: false })));
+  const placed = [];
+  const at = (r, c) => (r >= 0 && c >= 0 && r < SIZE && c < SIZE) ? g[r][c] : null;
+  const pool = shuffle(BANK.slice());
+
+  function fits(word, r, c, dir) {
+    const dr = dir === "d" ? 1 : 0, dc = dir === "a" ? 1 : 0;
+    const er = r + dr * (word.length - 1), ec = c + dc * (word.length - 1);
+    if (r < 0 || c < 0 || er >= SIZE || ec >= SIZE) return -1;
+    const before = at(r - dr, c - dc), after = at(er + dr, ec + dc);
+    if ((before && before.ch) || (after && after.ch)) return -1;
+    let crosses = 0;
+    for (let i = 0; i < word.length; i++) {
+      const rr = r + dr * i, cc = c + dc * i, cell = g[rr][cc];
+      if (cell.ch) {
+        if (cell.ch !== word[i] || cell[dir]) return -1;
+        crosses++;
+      } else {
+        // empty cell: neighbours on either side (perpendicular) must be empty
+        const s1 = at(rr + dc, cc + dr), s2 = at(rr - dc, cc - dr);
+        if ((s1 && s1.ch) || (s2 && s2.ch)) return -1;
+      }
+    }
+    return crosses;
+  }
+
+  function put(entry, r, c, dir) {
+    const word = entry[0], dr = dir === "d" ? 1 : 0, dc = dir === "a" ? 1 : 0;
+    for (let i = 0; i < word.length; i++) { const cell = g[r + dr * i][c + dc * i]; cell.ch = word[i]; cell[dir] = true; }
+    placed.push({ answer: word, clue: entry[1], hint: entry[2], r, c, dir });
+  }
+
+  const clash = (w) => placed.some(p => p.answer.includes(w) || w.includes(p.answer));
+
+  // seed with a medium-long word across the middle
+  const firstIdx = pool.findIndex(e => e[0].length >= 7 && e[0].length <= 11);
+  const first = pool.splice(firstIdx, 1)[0];
+  put(first, Math.floor(SIZE / 2), Math.floor((SIZE - first[0].length) / 2), "a");
+
+  for (let pass = 0; pass < 2 && placed.length < TARGET; pass++) {
+    for (let k = 0; k < pool.length && placed.length < TARGET; k++) {
+      const entry = pool[k], word = entry[0];
+      if (!entry || clash(word)) continue;
+      let best = [], bestScore = 0;
+      for (const p of placed) {
+        const dir = p.dir === "a" ? "d" : "a";
+        for (let i = 0; i < p.answer.length; i++) {
+          const pr = p.r + (p.dir === "d" ? i : 0), pc = p.c + (p.dir === "a" ? i : 0);
+          for (let j = 0; j < word.length; j++) {
+            if (word[j] !== p.answer[i]) continue;
+            const r = dir === "d" ? pr - j : pr, c = dir === "a" ? pc - j : pc;
+            const n = fits(word, r, c, dir);
+            if (n < 1) continue;
+            if (n > bestScore) { bestScore = n; best = [[r, c, dir]]; }
+            else if (n === bestScore) best.push([r, c, dir]);
+          }
+        }
+      }
+      if (best.length) {
+        const [r, c, dir] = best[Math.floor(Math.random() * best.length)];
+        put(entry, r, c, dir);
+        pool[k] = null;
+      }
+    }
+    for (let k = pool.length - 1; k >= 0; k--) if (!pool[k]) pool.splice(k, 1);
+  }
+  return placed;
+}
+
+function generate() {
+  let best = null, bestScore = -1;
+  for (let t = 0; t < 40; t++) {
+    const placed = attempt();
+    let minR = SIZE, minC = SIZE, maxR = 0, maxC = 0, letters = 0, cross = 0;
+    const seen = new Map();
+    for (const p of placed) {
+      for (let i = 0; i < p.answer.length; i++) {
+        const r = p.r + (p.dir === "d" ? i : 0), c = p.c + (p.dir === "a" ? i : 0);
+        minR = Math.min(minR, r); maxR = Math.max(maxR, r); minC = Math.min(minC, c); maxC = Math.max(maxC, c);
+        const key = r * SIZE + c;
+        if (seen.has(key)) cross++; else { seen.set(key, 1); letters++; }
+      }
+    }
+    const area = (maxR - minR + 1) * (maxC - minC + 1);
+    const score = placed.length * 100 + cross * 15 + (letters / area) * 60;
+    if (score > bestScore) { bestScore = score; best = { placed, minR, minC, rows: maxR - minR + 1, cols: maxC - minC + 1 }; }
+  }
+  // normalise coordinates and number the entries
+  const words = best.placed.map(p => ({ ...p, r: p.r - best.minR, c: p.c - best.minC }));
+  const starts = [...new Set(words.map(w => w.r * 100 + w.c))].sort((a, b) => a - b);
+  words.forEach(w => { w.num = starts.indexOf(w.r * 100 + w.c) + 1; });
+  words.sort((a, b) => a.num - b.num || (a.dir === "a" ? -1 : 1));
+  return { rows: best.rows, cols: best.cols, words };
+}
+
+// ---------------------------------------------------------------------------
+// Game state & rendering
+// ---------------------------------------------------------------------------
+const $ = id => document.getElementById(id);
+const HINTS = 3;
+let P, cells, cur, dir, hintsLeft, hinted, solved, startTime, timerId;
+
+function cellsOf(w) {
+  return Array.from({ length: w.answer.length }, (_, i) => cells[w.r + (w.dir === "d" ? i : 0)][w.c + (w.dir === "a" ? i : 0)]);
+}
+function wordAt(cell, d) { return cell && cell.words[d]; }
+function currentWord() { return wordAt(cur, dir) || wordAt(cur, dir === "a" ? "d" : "a"); }
+
+function newGame() {
+  P = generate();
+  hintsLeft = HINTS; hinted = new Set(); solved = false;
+  cells = Array.from({ length: P.rows }, (_, r) => Array.from({ length: P.cols }, (_, c) => ({ r, c, ans: null, words: {}, el: null, input: null })));
+  for (const w of P.words) {
+    w.cells = [];
+    for (let i = 0; i < w.answer.length; i++) {
+      const cell = cells[w.r + (w.dir === "d" ? i : 0)][w.c + (w.dir === "a" ? i : 0)];
+      cell.ans = w.answer[i]; cell.words[w.dir] = w; w.cells.push(cell);
+    }
+  }
+
+  const grid = $("grid");
+  grid.style.setProperty("--cols", P.cols);
+  $("gridWrap").style.setProperty("--gw", (P.cols * 38) + "px");
+  grid.innerHTML = "";
+  for (const row of cells) for (const cell of row) {
+    const div = document.createElement("div");
+    div.className = "cell";
+    cell.el = div;
+    if (cell.ans) {
+      div.classList.add("open");
+      const start = P.words.find(w => w.r === cell.r && w.c === cell.c);
+      if (start) { const n = document.createElement("span"); n.className = "num"; n.textContent = start.num; div.appendChild(n); }
+      const inp = document.createElement("input");
+      inp.autocomplete = "off"; inp.autocapitalize = "characters"; inp.spellcheck = false;
+      inp.setAttribute("aria-label", labelFor(cell));
+      cell.input = inp;
+      inp.addEventListener("pointerdown", e => { e.preventDefault(); select(cell, cur === cell ? (dir === "a" ? "d" : "a") : null); });
+      inp.addEventListener("focus", () => { if (cur !== cell) select(cell); inp.select(); });
+      inp.addEventListener("keydown", e => onKey(e, cell));
+      inp.addEventListener("input", () => onInput(cell));
+      div.appendChild(inp);
+    }
+    grid.appendChild(div);
+  }
+
+  renderClueLists();
+  renderPips();
+  setStatus("");
+  $("checkBtn").disabled = false;
+  cur = null; dir = "a";
+  const first = P.words[0];
+  select(first.cells[0], first.dir, true);
+  clearInterval(timerId); startTime = Date.now(); tick(); timerId = setInterval(tick, 1000);
+  sendHeight();
+}
+
+function labelFor(cell) {
+  return Object.values(cell.words).map(w => w.num + (w.dir === "a" ? " Across" : " Down")).join(", ");
+}
+
+function renderClueLists() {
+  for (const d of ["a", "d"]) {
+    const ol = $(d === "a" ? "acrossList" : "downList");
+    ol.innerHTML = "";
+    for (const w of P.words.filter(x => x.dir === d)) {
+      const li = document.createElement("li");
+      li.innerHTML = "<b>" + w.num + "</b><span></span>";
+      li.querySelector("span").textContent = w.clue;
+      li.addEventListener("click", () => select(w.cells.find(c => !c.input.value) || w.cells[0], w.dir));
+      w.li = li;
+      ol.appendChild(li);
+    }
+  }
+}
+
+function renderPips() {
+  $("pips").innerHTML = Array.from({ length: HINTS }, (_, i) => '<i class="' + (i < HINTS - hintsLeft ? "used" : "") + '"></i>').join("");
+  $("hintBtn").setAttribute("aria-label", "Hint, " + hintsLeft + " left");
+  updateHintBtn();
+}
+
+function updateHintBtn() {
+  const w = cur && currentWord();
+  $("hintBtn").disabled = solved || hintsLeft === 0 || !w || hinted.has(w);
+}
+
+function select(cell, newDir, noFocus) {
+  if (newDir && cell.words[newDir]) dir = newDir;
+  else if (!cell.words[dir]) dir = dir === "a" ? "d" : "a";
+  cur = cell;
+  const w = currentWord();
+  for (const row of cells) for (const c of row) if (c.ans) c.el.classList.remove("active", "inword");
+  w.cells.forEach(c => c.el.classList.add("inword"));
+  cell.el.classList.add("active");
+  P.words.forEach(x => x.li.classList.toggle("on", x === w));
+  $("clueTag").textContent = w.num + (w.dir === "a" ? " Across" : " Down");
+  $("clueText").textContent = w.clue;
+  const h = $("clueHint");
+  if (hinted.has(w)) { h.innerHTML = "<b>Hint:</b> "; h.append(w.hint); h.hidden = false; } else h.hidden = true;
+  updateHintBtn();
+  if (!noFocus && document.activeElement !== cell.input) cell.input.focus({ preventScroll: true });
+}
+
+function move(cell, dr, dc) {
+  let r = cell.r + dr, c = cell.c + dc;
+  while (r >= 0 && c >= 0 && r < P.rows && c < P.cols) {
+    if (cells[r][c].ans) return cells[r][c];
+    r += dr; c += dc;
+  }
+  return null;
+}
+
+function setLetter(cell, ch) {
+  cell.input.value = ch;
+  cell.el.classList.remove("wrong");
+  if (!ch) cell.el.classList.remove("revealed");
+  refreshDone();
+}
+
+function advance(cell) {
+  const w = currentWord();
+  const idx = w.cells.indexOf(cell);
+  const nextEmpty = w.cells.slice(idx + 1).find(c => !c.input.value);
+  if (nextEmpty) return select(nextEmpty, w.dir);
+  if (idx < w.cells.length - 1) return select(w.cells[idx + 1], w.dir);
+  if (w.cells.every(c => c.input.value)) jumpWord(1, true);
+}
+
+function jumpWord(step, preferEmpty) {
+  const w = currentWord();
+  const order = P.words.filter(x => x.dir === "a").concat(P.words.filter(x => x.dir === "d"));
+  let i = order.indexOf(w);
+  for (let k = 0; k < order.length; k++) {
+    i = (i + step + order.length) % order.length;
+    const nw = order[i];
+    const empty = nw.cells.find(c => !c.input.value);
+    if (!preferEmpty || empty) return select(empty || nw.cells[0], nw.dir);
+  }
+  select(order[(order.indexOf(w) + step + order.length) % order.length].cells[0], order[(order.indexOf(w) + step + order.length) % order.length].dir);
+}
+
+function onInput(cell) {
+  if (solved) { cell.input.value = cell.ans; return; }
+  // Phone keyboards skip keydown and only fire input; keep just the newest letter.
+  const v = cell.input.value.replace(/[^a-z]/gi, "").slice(-1).toUpperCase();
+  setLetter(cell, v);
+  if (v) advance(cell);
+}
+
+function onKey(e, cell) {
+  const k = e.key;
+  if (solved && k.length === 1) { e.preventDefault(); return; }
+  if (/^[a-zA-Z]$/.test(k) && !e.metaKey && !e.ctrlKey && !e.altKey) {
+    e.preventDefault(); setLetter(cell, k.toUpperCase()); advance(cell);
+  } else if (k === "Backspace" || k === "Delete") {
+    e.preventDefault();
+    if (solved) return;
+    if (cell.input.value || k === "Delete") setLetter(cell, "");
+    else {
+      const w = currentWord(), idx = w.cells.indexOf(cell);
+      if (idx > 0) { const p = w.cells[idx - 1]; setLetter(p, ""); select(p, w.dir); }
+    }
+  } else if (k.startsWith("Arrow")) {
+    e.preventDefault();
+    const d = { ArrowLeft: [0, -1, "a"], ArrowRight: [0, 1, "a"], ArrowUp: [-1, 0, "d"], ArrowDown: [1, 0, "d"] }[k];
+    if (dir !== d[2] && cell.words[d[2]]) return select(cell, d[2]);
+    const n = move(cell, d[0], d[1]);
+    if (n) select(n, d[2]);
+  } else if (k === "Tab" || k === "Enter") {
+    e.preventDefault(); jumpWord(e.shiftKey ? -1 : 1, false);
+  } else if (k === " ") {
+    e.preventDefault(); select(cell, dir === "a" ? "d" : "a");
+  }
+}
+
+function refreshDone() {
+  for (const w of P.words) w.li.classList.toggle("done", w.cells.every(c => c.input.value));
+}
+
+function check() {
+  let wrong = 0, empty = 0;
+  for (const row of cells) for (const c of row) {
+    if (!c.ans) continue;
+    const v = c.input.value;
+    if (!v) { empty++; c.el.classList.remove("wrong"); }
+    else if (v !== c.ans) { wrong++; c.el.classList.add("wrong"); }
+    else c.el.classList.remove("wrong");
+  }
+  if (!wrong && !empty) return win();
+  if (wrong) setStatus(wrong + (wrong === 1 ? " square is" : " squares are") + " incorrect" + (empty ? " · " + empty + " still empty" : "") + ".", "bad");
+  else setStatus("Everything so far is correct! " + empty + (empty === 1 ? " square" : " squares") + " to go.", "good");
+}
+
+function win() {
+  solved = true;
+  clearInterval(timerId);
+  for (const row of cells) for (const c of row) if (c.ans) { c.el.classList.add("solved"); c.el.classList.remove("wrong"); c.input.readOnly = true; }
+  const used = HINTS - hintsLeft;
+  setStatus("Solved in " + $("timer").textContent + (used ? " with " + used + (used === 1 ? " hint" : " hints") : " with no hints") + ". Go Big Red!", "good");
+  $("checkBtn").disabled = true;
+  updateHintBtn();
+}
+
+function hint() {
+  const w = currentWord();
+  if (!w || hintsLeft === 0 || hinted.has(w) || solved) return;
+  hintsLeft--; hinted.add(w);
+  const target = w.cells.find(c => c.input.value !== c.ans);
+  if (target) { setLetter(target, target.ans); target.el.classList.add("revealed"); }
+  renderPips();
+  select(cur, w.dir);
+  setStatus(hintsLeft ? hintsLeft + (hintsLeft === 1 ? " hint" : " hints") + " left." : "That was your last hint.", "");
+  if (P.words.every(x => x.cells.every(c => c.input.value === c.ans))) win();
+}
+
+function setStatus(msg, kind) {
+  const s = $("status");
+  s.textContent = msg; s.className = "status" + (kind ? " " + kind : "");
+  sendHeight();
+}
+
+function tick() {
+  const s = Math.floor((Date.now() - startTime) / 1000);
+  $("timer").textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+}
+
+// Let a parent CMS page resize the iframe to fit.
+function sendHeight() {
+  if (window.parent === window) return;
+  window.parent.postMessage({ type: "dn-crossword-height", height: document.documentElement.scrollHeight }, "*");
+}
+if ("ResizeObserver" in window) new ResizeObserver(sendHeight).observe(document.body);
+
+$("checkBtn").addEventListener("click", check);
+$("hintBtn").addEventListener("click", hint);
+$("newBtn").addEventListener("click", () => {
+  const started = P && !solved && P.words.some(w => w.cells.some(c => c.input.value));
+  if (started && !confirm("Start a new puzzle? Your progress on this one will be lost.")) return;
+  newGame();
+});
+$("prev").addEventListener("click", () => jumpWord(-1, false));
+$("next").addEventListener("click", () => jumpWord(1, false));
+
+newGame();
+</script>
+</body>
+</html>
