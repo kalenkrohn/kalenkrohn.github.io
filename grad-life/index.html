@@ -1,0 +1,1919 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Grad Life</title>
+  <meta name="description" content="Pick your UNL major, build your student and train your way from freshman to graduate.">
+  <meta name="color-scheme" content="light">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Roboto+Condensed:wght@700&family=Playfair+Display:wght@800;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #ba1f1f;
+      --red-dark: #8f1717;
+      --scarlet: #d00000;
+      --cream: #f5f1e7;
+      --ink: #333333;
+      --muted: #6b6b6b;
+      --line: #dcdcdc;
+      --wash: #f4f4f4;
+      --good: #1d7a3c;
+      --head: "Roboto Condensed", "Arial Narrow", Arial, sans-serif;
+      --body: "Open Sans", Arial, sans-serif;
+      --mast: "Playfair Display", Georgia, "Times New Roman", serif;
+      --pixel: "Press Start 2P", "Courier New", monospace;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #fff; color: var(--ink); }
+    body { font: 14px/1.5 var(--body); }
+    button { font: inherit; color: inherit; }
+    .app { max-width: 920px; margin: 0 auto; }
+    [hidden] { display: none !important; }
+
+    .topline { background: #111; color: #cfcfcf; font: 600 11px/1 var(--body); padding: 7px 16px; display: flex; justify-content: space-between; gap: 12px; }
+    .topline a { color: #fff; text-decoration: none; }
+    .topline a:hover { text-decoration: underline; }
+    .masthead { text-align: center; padding: 12px 16px 8px; border-bottom: 1px solid var(--line); }
+    .masthead .kicker { font: 700 11px var(--head); text-transform: uppercase; letter-spacing: 2px; color: var(--red); }
+    .masthead h1 { font: 900 clamp(30px, 7vw, 46px)/1 var(--mast); margin: 4px 0 2px; color: #111; letter-spacing: -.5px; }
+    .masthead .tag { font: italic 13px var(--body); color: var(--muted); margin: 0; }
+    .bar { background: var(--red); color: #fff; padding: 8px 16px; display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; font: 700 14px var(--head); text-transform: uppercase; letter-spacing: .6px; min-height: 38px; }
+    .bar .spacer { flex: 1; }
+    .bar .money { font-variant-numeric: tabular-nums; }
+
+    .screen { padding: 16px; }
+    h2.sec { font: 700 15px var(--head); text-transform: uppercase; letter-spacing: .6px; margin: 0 0 4px; padding-bottom: 4px; border-bottom: 2px solid var(--ink); }
+    .lede { margin: 6px 0 14px; color: var(--muted); }
+
+    .btn { border: 0; border-radius: 4px; background: var(--red); color: #fff; padding: 10px 18px; font: 700 15px var(--head); text-transform: uppercase; letter-spacing: .8px; cursor: pointer; min-height: 44px; }
+    .btn:hover:not(:disabled) { background: var(--red-dark); }
+    .btn:disabled { background: #c9c9c9; cursor: not-allowed; }
+    .btn.ghost { background: #fff; color: var(--ink); border: 1px solid var(--line); }
+    .btn.ghost:hover:not(:disabled) { border-color: var(--red); color: var(--red); background: #fff; }
+    .btn.big { font-size: 18px; padding: 12px 28px; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+    /* Title */
+    .title { text-align: center; padding: 18px 16px 24px; }
+    .title canvas { width: 100%; max-width: 620px; height: auto; image-rendering: pixelated; display: block; margin: 0 auto 10px; }
+    .title h2 { font: 900 clamp(24px, 5vw, 34px)/1.1 var(--mast); margin: 8px 0; }
+    .title p { max-width: 560px; margin: 0 auto 14px; color: var(--muted); }
+    .title .row { justify-content: center; }
+
+    /* Major select */
+    .majors { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+    .mcard { text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 10px; display: grid; grid-template-columns: 74px 1fr; gap: 10px; cursor: pointer; align-items: start; }
+    .mcard:hover { border-color: var(--red); box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+    .mcard canvas { width: 74px; height: 77px; image-rendering: pixelated; background: var(--wash); border-radius: 4px; }
+    .mcard h3 { margin: 0; font: 700 16px/1.15 var(--head); text-transform: uppercase; letter-spacing: .3px; }
+    .mcard .col { font-size: 11px; color: var(--muted); line-height: 1.3; margin-bottom: 4px; }
+    .mcard .sw { font-size: 12px; line-height: 1.4; }
+    .mcard .sw b { font-weight: 700; }
+    .mcard .up { color: var(--good); }
+    .mcard .down { color: var(--red); }
+    .mcard .perk { margin-top: 4px; font-size: 12px; line-height: 1.35; }
+    .mcard .perk b { color: var(--red); }
+
+    /* Creator */
+    .create { display: grid; grid-template-columns: 260px 1fr; gap: 18px; align-items: start; }
+    .preview { position: sticky; top: 8px; text-align: center; background: linear-gradient(#e9e4d6, #f5f1e7); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+    .preview canvas { width: 184px; height: 192px; image-rendering: pixelated; }
+    .preview .who { font: 700 15px var(--head); text-transform: uppercase; letter-spacing: .4px; margin-top: 4px; }
+    .preview .sub { font-size: 12px; color: var(--muted); }
+    .preview .row { justify-content: center; margin-top: 8px; }
+    .opts { display: grid; gap: 10px; }
+    .opt { display: grid; grid-template-columns: 110px 1fr; gap: 8px; align-items: center; }
+    .opt > label, .opt > .lab { font: 700 12px var(--head); text-transform: uppercase; letter-spacing: .5px; color: var(--ink); }
+    .opt .lab small { display: block; font: 600 10px var(--body); text-transform: none; letter-spacing: 0; color: var(--muted); }
+    .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+    .chip { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 4px 10px; font-size: 12px; font-weight: 600; cursor: pointer; min-height: 32px; }
+    .chip:hover:not(:disabled) { border-color: var(--red); }
+    .chip[aria-pressed="true"] { background: var(--red); color: #fff; border-color: var(--red); }
+    .chip:disabled { color: #a9a9a9; border-style: dashed; cursor: not-allowed; }
+    .chip.major { border-color: #d9b45a; background: #fff8e1; }
+    .chip.major[aria-pressed="true"] { background: var(--red); border-color: var(--red); }
+    .sw-chip { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1px var(--line); cursor: pointer; padding: 0; }
+    .sw-chip[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--red); }
+    input[type=text], select { font: 600 14px var(--body); padding: 7px 10px; border: 1px solid var(--line); border-radius: 4px; width: 100%; max-width: 280px; background: #fff; color: var(--ink); }
+    .group-h { font: 700 13px var(--head); text-transform: uppercase; letter-spacing: .6px; color: var(--red); margin: 8px 0 -2px; }
+
+    /* Hub */
+    .hubtop { display: grid; grid-template-columns: 300px 1fr; gap: 16px; align-items: start; }
+    .dorm { border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+    .dorm canvas { width: 100%; height: auto; display: block; image-rendering: pixelated; }
+    .dorm .cap { padding: 6px 10px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
+    .dorm .cap b { color: var(--ink); font: 700 14px var(--head); text-transform: uppercase; letter-spacing: .3px; }
+    .stats { display: grid; gap: 7px; }
+    .stat { display: grid; grid-template-columns: 82px 1fr 34px; gap: 8px; align-items: center; }
+    .stat .nm { font: 700 13px var(--head); text-transform: uppercase; letter-spacing: .4px; }
+    .stat .meter { height: 14px; background: var(--wash); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; position: relative; }
+    .stat .meter i { position: absolute; inset: 0 auto 0 0; background: var(--scarlet); transition: width .5s; }
+    .stat.sanity .meter i { background: #3b8fd6; }
+    .stat.sanity.low .meter i { background: #e07a1f; }
+    .stat .v { font: 700 14px var(--head); text-align: right; font-variant-numeric: tabular-nums; }
+    .msg { margin-top: 10px; padding: 8px 10px; background: #fbf6e6; border-left: 3px solid #d9b45a; font-size: 13px; min-height: 38px; }
+    .msg.bad { background: #fdecec; border-left-color: var(--red); }
+    .msg.good { background: #e9f4ec; border-left-color: var(--good); }
+    .acts { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px; margin-top: 14px; }
+    .act { text-align: left; border: 1px solid var(--line); background: #fff; border-radius: 6px; padding: 9px 11px; cursor: pointer; display: grid; grid-template-columns: 36px 1fr; gap: 8px; align-items: center; min-height: 60px; }
+    .act:hover:not(:disabled) { border-color: var(--red); box-shadow: 0 2px 8px rgba(0,0,0,.07); }
+    .act:disabled { opacity: .45; cursor: not-allowed; }
+    .act .ic { width: 36px; height: 36px; border-radius: 6px; display: grid; place-items: center; font: 700 15px var(--pixel); color: #fff; }
+    .act b { display: block; font: 700 14px/1.2 var(--head); text-transform: uppercase; letter-spacing: .3px; }
+    .act span { font-size: 12px; color: var(--muted); line-height: 1.3; display: block; }
+    .act.race { grid-column: 1 / -1; background: #fff6f6; border-color: #f0b8b8; }
+    .act.race b { color: var(--red); font-size: 16px; }
+
+    /* Play (minigames + race) */
+    .play { position: relative; max-width: 760px; margin: 0 auto; }
+    .play canvas { width: 100%; height: auto; display: block; border-radius: 6px; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; cursor: pointer; background: #222; }
+    .panel { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(17,17,17,.78); border-radius: 6px; padding: 14px; overflow: auto; }
+    .panel .card { background: #fff; border-top: 4px solid var(--red); border-radius: 4px; padding: 16px 18px; max-width: 440px; width: 100%; text-align: center; }
+    .panel .kick { font: 700 11px var(--head); text-transform: uppercase; letter-spacing: 1.5px; color: var(--red); }
+    .panel h3 { font: 900 26px/1.1 var(--mast); margin: 4px 0 8px; color: #111; }
+    .panel p { margin: 0 0 8px; font-size: 14px; }
+    .panel .ctl { font-size: 12px; color: var(--muted); background: var(--wash); border-radius: 4px; padding: 6px 8px; margin-bottom: 12px; }
+    .gains { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 6px 0 12px; }
+    .gains span { font: 700 15px var(--head); background: var(--wash); border-radius: 4px; padding: 5px 10px; }
+    .gains .p { color: var(--good); }
+    .gains .n { color: var(--red); }
+    .playnote { text-align: center; font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+    /* Shop */
+    .shop { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+    .item { border: 1px solid var(--line); border-radius: 6px; padding: 10px; display: grid; gap: 4px; }
+    .item b { font: 700 15px var(--head); text-transform: uppercase; letter-spacing: .3px; }
+    .item span { font-size: 12px; color: var(--muted); }
+    .item .row { justify-content: space-between; margin-top: 4px; }
+    .item .price { font: 700 16px var(--head); color: var(--good); }
+
+    /* Year end */
+    .yearend { text-align: center; }
+    .yearend canvas { width: 184px; height: 192px; image-rendering: pixelated; }
+    .report { max-width: 420px; margin: 10px auto 14px; border: 1px solid var(--line); border-radius: 6px; text-align: left; }
+    .report div { display: flex; justify-content: space-between; padding: 7px 12px; border-bottom: 1px solid var(--line); }
+    .report div:last-child { border-bottom: 0; background: var(--wash); font-weight: 700; }
+    .report b { font: 700 16px var(--head); }
+    .unlock { display: inline-block; background: #fff8e1; border: 1px solid #d9b45a; border-radius: 4px; padding: 6px 12px; font-weight: 600; margin-bottom: 12px; }
+
+    .foot { padding: 10px 16px 16px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
+
+    @media (max-width: 700px) {
+      .topline .right { display: none; }
+      .create, .hubtop { grid-template-columns: 1fr; }
+      .preview { position: static; }
+      .opt { grid-template-columns: 1fr; gap: 4px; }
+      .dorm { max-width: 360px; margin: 0 auto; width: 100%; }
+      .acts { grid-template-columns: 1fr 1fr; }
+      .act { grid-template-columns: 1fr; text-align: center; justify-items: center; }
+      .act span { display: none; }
+      .act.race span { display: block; }
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topline"><span>Student voice of the University of Nebraska-Lincoln since 1901</span><a class="right" href="https://www.dailynebraskan.com/" target="_blank" rel="noopener">dailynebraskan.com &rsaquo;</a></div>
+  <header class="masthead">
+    <div class="kicker">A Daily Nebraskan game</div>
+    <h1>Grad Life</h1>
+    <p class="tag">Four years. One diploma. Zero sleep.</p>
+  </header>
+  <div class="bar" id="bar"><span id="barL">Welcome to UNL</span><span class="spacer"></span><span class="money" id="barR"></span></div>
+
+  <!-- TITLE -->
+  <section class="screen title" id="sTitle">
+    <canvas id="titleCv" width="620" height="200" aria-hidden="true"></canvas>
+    <h2>Raise a freshman. Train them up. Get them across that stage.</h2>
+    <p>Pick your UNL major, build your student, and survive four years of lectures, all-nighters, involvement fairs and dining hall shifts. Train your stats, then race across campus to pass each year.</p>
+    <div class="row">
+      <button class="btn big" id="bNew">New student</button>
+      <button class="btn big ghost" id="bCont" hidden>Continue</button>
+    </div>
+    <p class="playnote">Four years and Graduation Day · about 15–20 minutes · progress saves in your browser.</p>
+  </section>
+
+  <!-- MAJOR SELECT -->
+  <section class="screen" id="sMajor" hidden>
+    <h2 class="sec" id="majorH">Choose your major</h2>
+    <p class="lede" id="majorLede">Your major sets your starting stats, your special perk and the gear you'll unlock along the way.</p>
+    <div class="majors" id="majors"></div>
+  </section>
+
+  <!-- CREATOR -->
+  <section class="screen" id="sCreate" hidden>
+    <div class="create">
+      <div class="preview">
+        <canvas id="prevCv" width="92" height="96"></canvas>
+        <div class="who" id="prevName">Your student</div>
+        <div class="sub" id="prevSub"></div>
+        <div class="row"><button class="btn ghost" id="bRandom">Randomize</button></div>
+      </div>
+      <div>
+        <h2 class="sec" id="createH">Build your student</h2>
+        <div class="opts" id="opts"></div>
+        <div class="row" style="margin-top:16px">
+          <button class="btn big" id="bCreateDone">Start freshman year</button>
+          <button class="btn ghost" id="bSwitchMajor" hidden>Switch major (once)</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HUB -->
+  <section class="screen" id="sHub" hidden>
+    <div class="hubtop">
+      <div class="dorm">
+        <canvas id="dormCv" width="300" height="200"></canvas>
+        <div class="cap"><b id="hubName"></b><br><span id="hubSub"></span></div>
+      </div>
+      <div>
+        <h2 class="sec" id="hubH">Freshman year</h2>
+        <div class="stats" id="stats"></div>
+        <div class="msg" id="msg"></div>
+      </div>
+    </div>
+    <div class="acts" id="acts"></div>
+  </section>
+
+  <!-- PLAY -->
+  <section class="screen" id="sPlay" hidden>
+    <div class="play">
+      <canvas id="gameCv" width="640" height="400"></canvas>
+      <div class="panel" id="panel"></div>
+    </div>
+    <p class="playnote" id="playNote"></p>
+  </section>
+
+  <!-- SHOP -->
+  <section class="screen" id="sShop" hidden>
+    <h2 class="sec">Campus store</h2>
+    <p class="lede">Snacks help your Sanity. Gear boosts your stats. Some things are just for looking good.</p>
+    <div class="shop" id="shop"></div>
+    <div class="row" style="margin-top:14px"><button class="btn" id="bShopBack">Back to your room</button></div>
+  </section>
+
+  <!-- YEAR END -->
+  <section class="screen yearend" id="sYear" hidden>
+    <h2 class="sec" style="text-align:left" id="yearH">Year complete</h2>
+    <canvas id="yearCv" width="92" height="96"></canvas>
+    <h2 style="font: 900 30px/1.1 var(--mast); margin: 6px 0" id="yearTitle"></h2>
+    <div class="unlock" id="yearUnlock"></div>
+    <div class="report" id="report"></div>
+    <p style="max-width:520px;margin:0 auto 14px;color:var(--muted)" id="yearNext"></p>
+    <div class="row" style="justify-content:center">
+      <button class="btn big" id="bYearNext">Next year</button>
+      <button class="btn ghost" id="bYearAgain">Start over</button>
+    </div>
+  </section>
+
+  <!-- GRADUATION -->
+  <section class="screen yearend" id="sGrad" hidden>
+    <h2 class="sec" style="text-align:left">Graduation Day</h2>
+    <canvas id="gradCv" width="360" height="240" style="width:100%;max-width:480px;height:auto;image-rendering:pixelated;border-radius:6px"></canvas>
+    <h2 style="font: 900 32px/1.1 var(--mast); margin: 10px 0 4px" id="gradTitle"></h2>
+    <p style="margin:0 0 12px;color:var(--muted)" id="gradSub"></p>
+    <div class="report" id="gradReport"></div>
+    <div class="unlock" style="background:#fdecec;border-color:#f0b8b8">Your diploma arrived in the mail along with your first student loan bill.</div>
+    <p style="max-width:520px;margin:0 auto 14px;color:var(--muted)">Coming soon (never): <b>Grad Life 2: Entry Level</b> (requires five years of experience).</p>
+    <div class="row" style="justify-content:center"><button class="btn big" id="bGradAgain">Start a new student</button></div>
+  </section>
+
+  <p class="foot"><b>How to play:</b> Each week, pick one thing to do. Training minigames raise your stats, but they cost Sanity, so take a nap when you need one. Work dining hall shifts for cash and spend it at the campus store. Once you feel ready, race across campus to finish the year. Your progress saves automatically in this browser.</p>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = s => document.querySelector(s);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// ===========================================================================
+// DATA
+// ===========================================================================
+const SKIN = ["#f8d9c0", "#ebbd98", "#d19a6e", "#a8703f", "#7a4d2b", "#4f3020"];
+const HAIRC = ["#1d1714", "#4b2e1a", "#7a4a26", "#c99a4b", "#e6cf8a", "#9c3b20", "#b8b8b8", "#3a6fd8", "#d9609f"];
+const TOPC = [
+  { n: "Scarlet", c: "#d00000" }, { n: "Cream", c: "#efe6d0" }, { n: "Black", c: "#262626" },
+  { n: "Gray", c: "#8d8d8d" }, { n: "Navy", c: "#25385e" }, { n: "Forest", c: "#2f6b45" }, { n: "Purple", c: "#5b3a8c" }
+];
+const PANTS = [{ n: "Jeans", c: "#3b5c8f" }, { n: "Khakis", c: "#b59e74" }, { n: "Black", c: "#2b2b2b" }, { n: "Sweats", c: "#9b9b9b" }];
+const HAIR = [["short", "Short"], ["buzz", "Buzz"], ["long", "Long"], ["curly", "Curly"], ["ponytail", "Ponytail"], ["bun", "Bun"], ["mohawk", "Mohawk"], ["bald", "Bald"]];
+const FACIAL = [["none", "None"], ["stubble", "Stubble"], ["mustache", "Mustache"], ["beard", "Beard"]];
+const GLASSES = [["none", "None"], ["round", "Round"], ["square", "Square"]];
+const BASE_TOPS = [["hoodie", "Hoodie"], ["crewneck", "Crewneck"], ["flannel", "Flannel"], ["athletic", "Athletic"]];
+const HOMETOWNS = ["Omaha", "Lincoln", "Grand Island", "Kearney", "Scottsbluff", "North Platte", "A small town (pop. 312)", "Out of state"];
+const HALLS = [
+  { id: "abel", n: "Abel Hall", perk: "+2 Social", fx: { social: 2 } },
+  { id: "selleck", n: "Selleck Quad", perk: "+2 Brains", fx: { brains: 2 } },
+  { id: "harper", n: "Harper Hall", perk: "+2 Stamina", fx: { stamina: 2 } },
+  { id: "knoll", n: "The Knoll", perk: "+10 Sanity", fx: { sanity: 10 } },
+  { id: "off", n: "Off campus", perk: "+$40, but -5 Sanity (the commute)", fx: { money: 40, sanity: -5 } }
+];
+
+// Accessories. slot: head, face, neck, back, hand, top, feet.
+const ITEMS = {
+  backpack:    { slot: "back", n: "Backpack", free: true },
+  lanyard:     { slot: "neck", n: "Lanyard", free: true },
+  notebook:    { slot: "hand", n: "Reporter's notebook" },
+  presspass:   { slot: "neck", n: "Press pass" },
+  laptop:      { slot: "hand", n: "Sticker-covered laptop" },
+  headphones:  { slot: "head", n: "Big headphones" },
+  qzip:        { slot: "top", n: "Quarter-zip" },
+  padfolio:    { slot: "hand", n: "Leather padfolio" },
+  calculator:  { slot: "hand", n: "Graphing calculator" },
+  safety:      { slot: "face", n: "Safety glasses" },
+  tube:        { slot: "back", n: "Drawing tube" },
+  turtleneck:  { slot: "top", n: "Black turtleneck" },
+  boots:       { slot: "feet", n: "Work boots" },
+  seedcap:     { slot: "head", n: "Seed-company cap" },
+  instrument:  { slot: "back", n: "Instrument case" },
+  scarf:       { slot: "neck", n: "All-weather scarf" },
+  scrubs:      { slot: "top", n: "Scrubs" },
+  stethoscope: { slot: "neck", n: "Stethoscope" },
+  map:         { slot: "hand", n: "Campus map (upside down)" },
+  namesticker: { slot: "neck", n: "“Hello My Name Is” sticker" },
+  pen:         { slot: "head", n: "Pen behind the ear" },
+  camera:      { slot: "neck", n: "Camera" },
+  styleguide:  { slot: "hand", n: "Dog-eared style guide" },
+  bluelight:   { slot: "face", n: "Blue-light glasses" },
+  keyboard:    { slot: "hand", n: "Mechanical keyboard" },
+  duck:        { slot: "pet", n: "Rubber debugging duck" },
+  watch:       { slot: "wrist", n: "Smartwatch" },
+  vest:        { slot: "top", n: "Fleece vest" },
+  cards:       { slot: "hand", n: "Business cards" },
+  hardhat:     { slot: "head", n: "Hard hat" },
+  toolbelt:    { slot: "waist", n: "Tool belt" },
+  sliderule:   { slot: "hand", n: "Slide rule" },
+  xacto:       { slot: "neck", n: "X-Acto knife lanyard" },
+  model:       { slot: "hand", n: "Foam-core model" },
+  eyebags:     { slot: "face", n: "Under-eye bags (earned)" },
+  barnjacket:  { slot: "top", n: "Barn jacket" },
+  showstick:   { slot: "hand", n: "Show stick" },
+  goat:        { slot: "pet", n: "Baby goat" },
+  sheetmusic:  { slot: "hand", n: "Sheet music" },
+  headset:     { slot: "head", n: "Stage-crew headset" },
+  bouquet:     { slot: "hand", n: "Opening-night bouquet" },
+  clipboard:   { slot: "hand", n: "Clipboard" },
+  socks:       { slot: "feet", n: "Compression socks" },
+  bottle:      { slot: "hand", n: "Giant water bottle" },
+  decidingtee: { slot: "top", n: "“Still Deciding” tee" },
+  eightball:   { slot: "hand", n: "Magic 8-ball" },
+  everything:  { slot: "back", n: "Backpack of everything" },
+  diploma:     { slot: "hand", n: "Diploma" },
+  beanie:      { slot: "head", n: "Scarlet beanie", price: 25 },
+  cap:         { slot: "head", n: "Backward cap", price: 25 },
+  sunglasses:  { slot: "face", n: "Sunglasses", price: 20 },
+  coffee:      { slot: "hand", n: "Giant iced coffee", price: 15 }
+};
+
+const MAJORS = [
+  { id: "journalism", n: "Journalism", col: "College of Journalism and Mass Communications", st: { brains: 10, stamina: 10, social: 20, wallet: 8 }, san: 1.2,
+    strong: "Social", weak: "Sanity", perk: "Deadline Mode", pd: "You run faster in the final stretch of every race.",
+    gear: ["notebook", "presspass", "pen", "camera", "styleguide"] },
+  { id: "cs", n: "Computer Science", col: "School of Computing", st: { brains: 22, stamina: 10, social: 4, wallet: 10 }, san: 1,
+    strong: "Brains", weak: "Social", perk: "Stack Overflow", pd: "Your first shortcut in every race is automatic.",
+    gear: ["laptop", "headphones", "bluelight", "keyboard", "duck"] },
+  { id: "business", n: "Business", col: "College of Business", st: { brains: 6, stamina: 10, social: 18, wallet: 18 }, san: 1,
+    strong: "Social, Wallet", weak: "Brains", perk: "Networking", pd: "The Involvement Fair pays double cash.",
+    gear: ["qzip", "padfolio", "watch", "vest", "cards"] },
+  { id: "engineering", n: "Engineering", col: "College of Engineering", st: { brains: 26, stamina: 10, social: 8, wallet: 10 }, san: 1.35,
+    strong: "Brains (big)", weak: "Sanity (big)", perk: "Problem Solver", pd: "+2 extra Brains every time you train it.",
+    gear: ["calculator", "safety", "hardhat", "toolbelt", "sliderule"] },
+  { id: "architecture", n: "Architecture", col: "College of Architecture", st: { brains: 12, stamina: 20, social: 8, wallet: 4 }, san: 1,
+    strong: "Stamina", weak: "Wallet", perk: "Studio Culture", pd: "All-nighters are easier: a much wider sweet spot.",
+    gear: ["tube", "turtleneck", "xacto", "model", "eyebags"] },
+  { id: "animalsci", n: "Animal Science", col: "College of Agricultural Sciences and Natural Resources", st: { brains: 10, stamina: 22, social: 6, wallet: 12 }, san: 1,
+    strong: "Stamina", weak: "Social", perk: "East Campus Local", pd: "You grew up around animals. Squirrels barely slow you down in races.",
+    gear: ["boots", "seedcap", "barnjacket", "showstick", "goat"] },
+  { id: "music", n: "Music / Theatre", col: "Hixson-Lied College of Fine and Performing Arts", st: { brains: 10, stamina: 10, social: 18, wallet: 4 }, san: .8,
+    strong: "Social, Sanity", weak: "Wallet", perk: "Encore", pd: "Retry one lost race without losing a week.",
+    gear: ["instrument", "scarf", "sheetmusic", "headset", "bouquet"] },
+  { id: "nursing", n: "Nursing", col: "Pre-health programs", st: { brains: 18, stamina: 18, social: 10, wallet: 10 }, san: 1.25,
+    strong: "Brains, Stamina", weak: "Sanity", perk: "Clinicals", pd: "+2 extra Stamina every time you train it.",
+    gear: ["scrubs", "stethoscope", "clipboard", "socks", "bottle"] },
+  { id: "undeclared", n: "Undeclared", col: "Explore Center", st: { brains: 13, stamina: 13, social: 13, wallet: 13 }, san: 1,
+    strong: "Balanced", weak: "Nothing", perk: "Explorer", pd: "Switch to any other major once, any time, from the mirror.",
+    gear: ["map", "namesticker", "decidingtee", "eightball", "everything"] }
+];
+for (const m of MAJORS) { m.start = m.gear[0]; m.y1 = m.gear[1]; }
+const MAJOR = Object.fromEntries(MAJORS.map(m => [m.id, m]));
+const YEARS = ["Freshman", "Sophomore", "Junior", "Senior"];
+
+const STATS = [["brains", "Brains"], ["stamina", "Stamina"], ["social", "Social"], ["wallet", "Wallet"]];
+const WEEKS = 8;          // weeks in freshman year before the final race is forced
+const RACE_OPENS = 4;     // week the race unlocks
+
+const YEAR_EVENTS = [
+  [],
+  [{ t: "You finally learned which building is which on East Campus.", fx: { brains: 2 } },
+   { t: "Your roommate adopted a cat. You are not allowed to have a cat.", fx: { sanity: 6 } },
+   { t: "You got elected treasurer of a club you joined by accident.", fx: { social: 3, sanity: -3 } }],
+  [{ t: "A recruiter accepted your LinkedIn request.", fx: { social: 3 } },
+   { t: "Your car needed a new tire. You still don't know what a lug nut is.", fx: { money: -25 } },
+   { t: "You got a paid research assistant gig.", fx: { money: 30 } }],
+  [{ t: "Senior pictures by Broyhill Fountain. You look great.", fx: { social: 2, sanity: 4 } },
+   { t: "Someone asked what your plans are after graduation.", fx: { sanity: -8 } },
+   { t: "You applied to 14 jobs in one night.", fx: { wallet: 2, sanity: -5 } }]
+];
+const EVENTS = [
+  { t: "Your roommate microwaved fish at 2 a.m.", fx: { sanity: -6 } },
+  { t: "You found $20 in an old hoodie pocket.", fx: { money: 20 } },
+  { t: "Free pizza at a club meeting!", fx: { sanity: 8 } },
+  { t: "You got lost in the Union looking for the bathroom.", fx: { sanity: -3 } },
+  { t: "A professor learned your name. Terrifying, but flattering.", fx: { social: 2 } },
+  { t: "Parking ticket. You don't even have a car.", fx: { money: -15 } },
+  { t: "Care package from home!", fx: { money: 15, sanity: 5 } },
+  { t: "You discovered the quiet floor of Love Library.", fx: { brains: 2 } },
+  { t: "3 a.m. fire alarm. Everyone stood outside in pajamas.", fx: { sanity: -8 } },
+  { t: "A “quick” game night in your hall was not quick.", fx: { social: 3, sanity: -4 } },
+  { t: "You took the stairs instead of the elevator. Character development.", fx: { stamina: 2 } }
+];
+
+const RIVALS = [
+  { n: "Tyler", tag: "already has three internships" },
+  { n: "Madison", tag: "4.0 GPA, never sleeps" },
+  { n: "Josh", tag: "sixth-year senior, knows every shortcut" }
+];
+
+// ===========================================================================
+// PIXEL CHARACTER (drawn in code, layered so every part can be customized)
+// Grid is 46x48 "pixels"; a dark outline is added automatically.
+// ===========================================================================
+const SW = 46, SH = 48;
+function shade(hex, amt) {
+  const n = parseInt(hex.slice(1), 16);
+  const f = c => clamp(Math.round(amt < 0 ? c * (1 + amt) : c + (255 - c) * amt), 0, 255);
+  return "#" + [n >> 16, (n >> 8) & 255, n & 255].map(v => f(v).toString(16).padStart(2, "0")).join("");
+}
+function paint(g, L, frame) {
+  const R = (x, y, w, h, c) => { g.fillStyle = c; g.fillRect(x + 7, y + 1, w, h); };
+  const skin = SKIN[L.skin], hc = HAIRC[L.hairColor], pc = PANTS[L.pants].c;
+  const tc = L.top === "barnjacket" ? "#a87b42" : L.top === "decidingtee" ? "#f4f4f4" : TOPC[L.topColor].c;
+  const sleeve = L.top === "vest" ? "#f2f2f2" : tc;
+  const shortSleeve = L.top === "scrubs" || L.top === "decidingtee";
+  const dk = shade(tc, -.25), hl = shade(hc, .22);
+  const dl = frame === 1 ? -1 : 0, dr = frame === 2 ? -1 : 0, al = frame === 1 ? 1 : frame === 2 ? -1 : 0, ar = -al;
+
+  // back items (behind the body)
+  if (L.back === "tube") { for (let i = 0; i < 17; i++) R(26 - i, 10 + i, 3, 2, "#c9a46a"); R(26, 9, 3, 2, "#3a3a3a"); }
+  if (L.back === "instrument") { R(24, 13, 7, 19, "#1e1e1e"); R(26, 12, 3, 1, "#666"); R(27, 22, 1, 1, "#c0c0c0"); }
+  if (L.back === "backpack") { R(8, 19, 16, 10, "#3d4f6b"); }
+  if (L.back === "everything") {
+    R(7, 17, 18, 12, "#5b8a3a"); R(7, 12, 3, 7, "#c9a46a"); R(7, 11, 3, 1, "#3a3a3a"); R(22, 11, 4, 8, "#1e1e1e");
+    R(23, 14, 3, 2, "#d00000"); R(10, 14, 2, 4, "#3fa9f5"); R(20, 13, 2, 5, "#f2c200");
+  }
+
+  // legs + shoes
+  R(10, 30 + dl, 5, 8, pc); R(17, 30 + dr, 5, 8, pc); R(14, 30, 4, 3, pc);
+  R(15, 30, 2, 1, shade(pc, -.2));
+  if (L.shoes === "boots") {
+    for (const [x, d] of [[9, dl], [17, dr]]) { R(x, 35 + d, 6, 5, "#6b4423"); R(x, 39 + d, 6, 1, "#3b2414"); R(x + 1, 36 + d, 4, 1, "#7d5330"); }
+  } else {
+    for (const [x, d] of [[9, dl], [17, dr]]) { R(x, 38 + d, 6, 2, "#f4f4f4"); R(x, 39 + d, 6, 1, "#b9b9b9"); R(x + 1, 38 + d, 2, 1, tc); }
+    if (L.shoes === "socks") for (const [x, d] of [[10, dl], [18, dr]]) { R(x, 35 + d, 4, 3, "#3fa9f5"); R(x, 36 + d, 4, 1, "#f2c200"); }
+  }
+
+  // neck
+  R(14, 17, 4, 2, shade(skin, -.12));
+
+  // arms
+  if (L.gown) { R(6, 19 + al, 3, 9, "#1b1b1b"); R(23, 19 + ar, 3, 9, "#1b1b1b"); R(6, 28 + al, 3, 1, skin); R(23, 28 + ar, 3, 1, skin); }
+  else if (shortSleeve) { R(6, 19 + al, 3, 4, tc); R(23, 19 + ar, 3, 4, tc); R(6, 23 + al, 3, 6, skin); R(23, 23 + ar, 3, 6, skin); }
+  else { R(6, 19 + al, 3, 8, sleeve); R(23, 19 + ar, 3, 8, sleeve); R(6, 27 + al, 3, 2, skin); R(23, 27 + ar, 3, 2, skin); }
+
+  // torso + top details
+  R(9, 19, 14, 11, tc);
+  const accent = TOPC[L.topColor].n === "Cream" ? "#d00000" : "#efe6d0";
+  switch (L.top) {
+    case "hoodie": R(11, 18, 10, 2, dk); R(14, 20, 1, 4, "#f3f3f3"); R(17, 20, 1, 4, "#f3f3f3"); R(12, 25, 8, 3, dk); R(9, 29, 14, 1, dk); R(6, 26 + al, 3, 1, dk); R(23, 26 + ar, 3, 1, dk); break;
+    case "crewneck": R(13, 19, 6, 1, dk); R(9, 22, 14, 2, accent); R(9, 29, 14, 1, dk); break;
+    case "flannel": for (let x = 10; x < 23; x += 3) R(x, 19, 1, 11, dk); for (let y = 21; y < 30; y += 3) R(9, y, 14, 1, dk); R(7, 19 + al, 1, 8, dk); R(24, 19 + ar, 1, 8, dk); R(14, 19, 4, 3, "#f5f5f5"); break;
+    case "athletic": R(9, 19, 1, 11, "#fff"); R(22, 19, 1, 11, "#fff"); R(7, 19 + al, 1, 8, "#fff"); R(24, 19 + ar, 1, 8, "#fff"); R(13, 19, 6, 1, dk); break;
+    case "qzip": R(12, 18, 8, 2, dk); R(15, 19, 2, 6, "#d0d0d0"); R(15, 24, 2, 1, "#8a8a8a"); R(9, 29, 14, 1, dk); break;
+    case "scrubs": R(14, 19, 4, 1, skin); R(15, 20, 2, 1, skin); R(18, 22, 3, 2, dk); R(9, 29, 14, 1, dk); break;
+    case "turtleneck": R(9, 29, 14, 1, dk); break;
+    case "vest": R(9, 19, 14, 11, "#f2f2f2"); R(9, 19, 5, 11, tc); R(18, 19, 5, 11, tc); R(14, 24, 4, 6, tc); R(15, 24, 2, 6, "#cfcfcf"); R(13, 19, 6, 1, "#dcdcdc"); break;
+    case "barnjacket": R(11, 18, 10, 2, "#4a3520"); R(16, 20, 1, 1, "#4a3520"); R(16, 23, 1, 1, "#4a3520"); R(16, 26, 1, 1, "#4a3520"); R(10, 24, 4, 3, dk); R(19, 24, 4, 3, dk); R(9, 29, 14, 1, dk); break;
+    case "decidingtee": R(13, 19, 6, 1, "#d9d9d9"); R(15, 21, 2, 1, "#d00000"); R(16, 22, 1, 1, "#d00000"); R(15, 23, 1, 1, "#d00000"); R(15, 25, 1, 1, "#d00000"); break;
+  }
+  if (L.gown) { R(9, 19, 14, 17, "#1b1b1b"); R(12, 19, 2, 13, "#d00000"); R(18, 19, 2, 13, "#d00000"); R(14, 19, 4, 2, "#f5f5f5"); }
+  if (L.wrist === "watch") { R(6, 26 + al, 3, 1, "#111"); R(7, 26 + al, 1, 1, "#3fa9f5"); }
+  if (L.waist === "toolbelt" && !L.gown) { R(9, 29, 14, 2, "#6b4423"); R(10, 30, 3, 3, "#7d5330"); R(19, 30, 3, 3, "#7d5330"); R(11, 33, 1, 2, "#999"); R(20, 33, 1, 3, "#d00000"); R(15, 29, 2, 2, "#c8a050"); }
+
+  // head
+  R(10, 6, 12, 12, skin); R(9, 10, 1, 3, skin); R(22, 10, 1, 3, skin);
+  R(11, 17, 10, 1, shade(skin, -.1));
+  if (L.top === "turtleneck") { R(12, 16, 8, 3, tc); R(12, 16, 8, 1, dk); }
+
+  // face
+  R(12, 11, 2, 2, "#2a1d14"); R(18, 11, 2, 2, "#2a1d14");
+  R(12, 11, 1, 1, "#ffffff"); R(18, 11, 1, 1, "#ffffff");
+  R(12, 9, 2, 1, shade(hc, -.1)); R(18, 9, 2, 1, shade(hc, -.1));
+  R(11, 14, 1, 1, "rgba(230,110,110,.45)"); R(20, 14, 1, 1, "rgba(230,110,110,.45)");
+  const fh = shade(hc, -.05);
+  if (L.facial === "mustache") R(13, 14, 6, 1, fh);
+  if (L.facial === "beard" || L.facial === "stubble") {
+    g.globalAlpha = L.facial === "stubble" ? .3 : 1;
+    R(10, 12, 2, 5, fh); R(20, 12, 2, 5, fh); R(11, 16, 10, 2, fh); R(13, 14, 6, 1, fh);
+    g.globalAlpha = 1;
+  }
+  R(15, 15, 2, 1, "#8a3b2e");
+
+  // hair
+  const short = () => { R(10, 4, 12, 4, hc); R(9, 6, 1, 6, hc); R(22, 6, 1, 6, hc); R(10, 8, 4, 1, hc); R(18, 8, 4, 1, hc); R(11, 4, 8, 1, hl); };
+  switch (L.hair) {
+    case "short": short(); break;
+    case "buzz": R(10, 5, 12, 2, hc); R(10, 7, 1, 2, hc); R(21, 7, 1, 2, hc); R(12, 5, 6, 1, hl); break;
+    case "long": short(); R(8, 7, 3, 14, hc); R(21, 7, 3, 14, hc); break;
+    case "curly": R(8, 3, 16, 5, hc); R(9, 2, 3, 1, hc); R(14, 2, 4, 1, hc); R(20, 2, 3, 1, hc); R(8, 8, 3, 7, hc); R(21, 8, 3, 7, hc);
+      R(11, 8, 2, 1, hc); R(15, 8, 2, 1, hc); R(19, 8, 2, 1, hc); R(10, 4, 1, 1, hl); R(14, 3, 1, 1, hl); R(19, 4, 1, 1, hl); R(12, 6, 1, 1, hl); R(17, 6, 1, 1, hl); break;
+    case "ponytail": short(); R(22, 5, 3, 3, hc); R(23, 8, 3, 9, hc); R(24, 8, 1, 8, hl); break;
+    case "bun": short(); R(13, 1, 6, 4, hc); R(14, 1, 3, 1, hl); break;
+    case "mohawk": R(14, 1, 4, 7, hc); R(15, 1, 1, 6, hl); R(10, 6, 1, 3, shade(skin, -.15)); R(21, 6, 1, 3, shade(skin, -.15)); break;
+    case "bald": R(13, 7, 3, 1, shade(skin, .25)); break;
+  }
+
+  // glasses / face items
+  if (L.face === "eyebags") { R(12, 13, 2, 1, "rgba(110,60,140,.55)"); R(18, 13, 2, 1, "rgba(110,60,140,.55)"); }
+  if (L.face === "bluelight") {
+    for (const x of [11, 17]) { R(x, 10, 4, 4, "rgba(80,160,255,.3)"); R(x, 10, 4, 1, "#1f4f9f"); R(x, 13, 4, 1, "#1f4f9f"); R(x, 10, 1, 4, "#1f4f9f"); R(x + 3, 10, 1, 4, "#1f4f9f"); }
+    R(15, 11, 2, 1, "#1f4f9f");
+  } else if (L.face === "safety") {
+    R(10, 10, 12, 4, "rgba(255,226,80,.5)"); R(10, 10, 12, 1, "#d4a017"); R(10, 13, 12, 1, "#d4a017"); R(9, 11, 1, 1, "#333"); R(22, 11, 1, 1, "#333");
+  } else if (L.face === "sunglasses") {
+    R(11, 10, 4, 3, "#151515"); R(17, 10, 4, 3, "#151515"); R(15, 11, 2, 1, "#151515"); R(12, 10, 1, 1, "#5a5a5a"); R(18, 10, 1, 1, "#5a5a5a");
+  } else if (L.glasses !== "none") {
+    const fc = "#2b2b2b", rnd = L.glasses === "round";
+    for (const x of [11, 17]) {
+      R(x + (rnd ? 1 : 0), 10, rnd ? 2 : 4, 1, fc); R(x + (rnd ? 1 : 0), 13, rnd ? 2 : 4, 1, fc);
+      R(x, 10 + (rnd ? 1 : 0), 1, rnd ? 2 : 4, fc); R(x + 3, 10 + (rnd ? 1 : 0), 1, rnd ? 2 : 4, fc);
+    }
+    R(15, 11, 2, 1, fc);
+  }
+
+  // head items (a graduation cap replaces them)
+  if (L.gown) { R(7, 3, 18, 2, "#1b1b1b"); R(10, 5, 12, 3, "#1b1b1b"); R(15, 2, 2, 1, "#333"); R(23, 4, 1, 6, "#d00000"); R(23, 10, 1, 2, "#f2c200"); }
+  else if (L.head === "pen") { R(22, 6, 1, 6, "#1f4fbf"); R(22, 6, 1, 1, "#e9e9e9"); }
+  else if (L.head === "hardhat") { R(9, 2, 14, 5, "#f2c200"); R(8, 6, 16, 2, "#d4a017"); R(15, 2, 2, 4, "#ffe066"); }
+  else if (L.head === "headset") { R(10, 3, 12, 1, "#222"); R(9, 4, 1, 7, "#222"); R(22, 4, 1, 7, "#222"); R(8, 9, 2, 4, "#222"); R(22, 9, 2, 4, "#222"); R(9, 13, 1, 2, "#222"); R(10, 15, 3, 1, "#222"); R(13, 15, 1, 1, "#d00000"); }
+  if (L.gown) {} else if (L.head === "cap") { R(10, 3, 12, 4, "#d00000"); R(9, 6, 14, 1, "#a00000"); R(14, 7, 4, 1, "#e9e9e9"); R(12, 3, 4, 1, "#e04040"); }
+  if (L.gown) {} else if (L.head === "beanie") { R(9, 2, 14, 6, "#d00000"); R(9, 7, 14, 2, "#a00000"); R(15, 0, 2, 2, "#efe6d0"); R(11, 3, 1, 4, "#e04040"); R(15, 3, 1, 4, "#e04040"); R(19, 3, 1, 4, "#e04040"); }
+  if (L.gown) {} else if (L.head === "headphones") { R(10, 3, 12, 1, "#2b2b2b"); R(9, 4, 1, 6, "#2b2b2b"); R(22, 4, 1, 6, "#2b2b2b"); R(7, 9, 3, 6, "#2b2b2b"); R(22, 9, 3, 6, "#2b2b2b"); R(8, 10, 1, 4, "#3fa9f5"); R(23, 10, 1, 4, "#3fa9f5"); }
+  if (L.gown) {} else if (L.head === "seedcap") { R(10, 2, 12, 5, "#2f6b45"); R(12, 3, 8, 3, "#efe6d0"); R(15, 4, 2, 1, "#d4a017"); R(8, 7, 16, 2, "#24563a"); }
+
+  // neck items
+  if (L.neck === "lanyard" || L.neck === "presspass") {
+    const cc = L.neck === "lanyard" ? "#d00000" : "#151515";
+    R(12, 19, 1, 3, cc); R(13, 22, 1, 2, cc); R(19, 19, 1, 3, cc); R(18, 22, 1, 2, cc); R(14, 24, 4, 1, cc);
+    if (L.neck === "lanyard") { R(14, 25, 4, 4, "#fff"); R(14, 25, 4, 1, "#d00000"); }
+    else { R(13, 25, 6, 4, "#fff"); R(13, 25, 6, 1, "#151515"); R(14, 27, 4, 1, "#d00000"); }
+  }
+  if (L.neck === "stethoscope") { const c = "#333"; R(11, 19, 1, 5, c); R(20, 19, 1, 5, c); R(12, 24, 1, 1, c); R(19, 24, 1, 1, c); R(13, 25, 2, 1, c); R(17, 25, 2, 1, c); R(15, 25, 2, 2, "#c8c8c8"); }
+  if (L.neck === "scarf") { R(11, 17, 10, 3, "#d00000"); R(11, 18, 10, 1, "#efe6d0"); R(17, 20, 3, 8, "#d00000"); R(17, 23, 3, 1, "#efe6d0"); R(17, 28, 1, 1, "#d00000"); R(19, 28, 1, 1, "#d00000"); }
+  if (L.neck === "namesticker") { R(11, 21, 6, 4, "#fff"); R(11, 21, 6, 1, "#d00000"); R(12, 23, 4, 1, "#5a5a5a"); }
+  if (L.neck === "camera") { R(11, 19, 1, 4, "#222"); R(20, 19, 1, 4, "#222"); R(12, 22, 8, 5, "#2b2b2b"); R(14, 23, 3, 3, "#777"); R(15, 24, 1, 1, "#bbb"); R(18, 22, 1, 1, "#d00000"); }
+  if (L.neck === "xacto") { const cc = "#f2c200"; R(12, 19, 1, 3, cc); R(13, 22, 1, 2, cc); R(19, 19, 1, 3, cc); R(18, 22, 1, 2, cc); R(14, 24, 4, 1, cc); R(15, 25, 2, 4, "#d8d8d8"); R(15, 29, 2, 1, "#555"); }
+
+  // backpack straps
+  if (L.back === "backpack" || L.back === "everything") { const c = L.back === "everything" ? "#3f6b28" : "#2c3a50"; R(11, 19, 2, 10, c); R(19, 19, 2, 10, c); }
+
+  // hand items (right hand)
+  const h = ar;
+  switch (L.hand) {
+    case "notebook": R(25, 22 + h, 5, 7, "#e9dfc4"); R(25, 22 + h, 5, 1, "#8a8a8a"); R(26, 24 + h, 3, 1, "#7f9bb5"); R(26, 26 + h, 3, 1, "#7f9bb5"); break;
+    case "laptop": R(24, 23 + h, 8, 6, "#c7c9cc"); R(25, 24 + h, 2, 2, "#d00000"); R(28, 25 + h, 2, 1, "#3fa9f5"); R(26, 27 + h, 2, 1, "#f2c200"); R(30, 24 + h, 1, 2, "#2f6b45"); break;
+    case "padfolio": R(24, 21 + h, 7, 9, "#6b3f22"); R(25, 22 + h, 5, 7, "#7d4b2a"); R(27, 25 + h, 1, 1, "#d4af37"); break;
+    case "calculator": R(25, 22 + h, 5, 7, "#3a3a3a"); R(26, 23 + h, 3, 1, "#9fd49a"); R(26, 25 + h, 1, 1, "#ddd"); R(28, 25 + h, 1, 1, "#ddd"); R(26, 27 + h, 1, 1, "#ddd"); R(28, 27 + h, 1, 1, "#ddd"); break;
+    case "map": R(23, 23 + h, 9, 6, "#efe2bf"); R(24, 25 + h, 6, 1, "#d00000"); R(26, 24 + h, 1, 4, "#6a9a78"); R(30, 26 + h, 1, 1, "#d00000"); break;
+    case "coffee": R(25, 21 + h, 4, 8, "rgba(255,255,255,.75)"); R(25, 24 + h, 4, 5, "#8a5a34"); R(25, 21 + h, 4, 1, "#e9e9e9"); R(27, 18 + h, 1, 3, "#d00000"); R(25, 25 + h, 4, 2, "#d00000"); break;
+    case "styleguide": R(25, 22 + h, 5, 7, "#b3261e"); R(26, 24 + h, 3, 1, "#fff"); R(26, 26 + h, 2, 1, "#fff"); R(29, 22 + h, 1, 1, "#f5f1e7"); break;
+    case "keyboard": R(22, 25 + h, 11, 4, "#2b2b2b"); for (let i = 0; i < 5; i++) { R(23 + i * 2, 26 + h, 1, 1, "#9a9a9a"); R(24 + i * 2, 27 + h, 1, 1, "#9a9a9a"); } R(31, 26 + h, 1, 1, "#d00000"); break;
+    case "cards": R(25, 24 + h, 5, 3, "#fff"); R(26, 22 + h, 5, 3, "#f3f3f3"); R(27, 23 + h, 3, 1, "#d00000"); break;
+    case "sliderule": R(22, 26 + h, 12, 2, "#e8d9a8"); R(22, 27 + h, 12, 1, "#a08a4a"); for (let i = 0; i < 6; i++) R(23 + i * 2, 26 + h, 1, 1, "#555"); break;
+    case "model": R(24, 21 + h, 7, 7, "#fafafa"); R(26, 18 + h, 3, 3, "#fafafa"); for (let i = 0; i < 3; i++) R(25 + i * 2, 23 + h, 1, 2, "#bdbdbd"); break;
+    case "showstick": R(26, 10 + h, 1, 26, "#5a3a1e"); R(26, 9 + h, 3, 1, "#5a3a1e"); break;
+    case "sheetmusic": R(24, 21 + h, 6, 8, "#fff"); for (let i = 0; i < 4; i++) R(25, 22 + i * 2 + h, 4, 1, "#555"); R(27, 23 + h, 1, 3, "#111"); break;
+    case "bouquet": R(26, 24 + h, 1, 5, "#2f6b45"); R(28, 24 + h, 1, 5, "#2f6b45"); R(24, 20 + h, 3, 3, "#d00000"); R(27, 19 + h, 3, 3, "#f2c200"); R(29, 21 + h, 3, 3, "#e46aa8"); R(25, 25 + h, 5, 3, "#efe6d0"); break;
+    case "clipboard": R(24, 21 + h, 7, 9, "#8a5a34"); R(25, 23 + h, 5, 6, "#fff"); R(26, 21 + h, 3, 2, "#9a9a9a"); R(26, 25 + h, 3, 1, "#7f9bb5"); R(26, 27 + h, 3, 1, "#7f9bb5"); break;
+    case "bottle": R(25, 18 + h, 4, 11, "#3a8fd8"); R(25, 17 + h, 4, 1, "#222"); R(25, 22 + h, 4, 2, "#fff"); R(26, 19 + h, 1, 9, "#6fb2ec"); break;
+    case "eightball": R(26, 22 + h, 4, 6, "#111"); R(25, 23 + h, 6, 4, "#111"); R(27, 24 + h, 2, 2, "#fff"); break;
+    case "diploma": R(23, 24 + h, 10, 3, "#f5f1e7"); R(27, 24 + h, 2, 3, "#d00000"); R(23, 24 + h, 1, 3, "#d8cfb8"); break;
+  }
+
+  // pets (sit beside your feet)
+  if (L.pet === "goat") {
+    R(28, 35, 8, 5, "#f2f2f2"); R(29, 40, 1, 3, "#d9d9d9"); R(34, 40, 1, 3, "#d9d9d9"); R(34, 32, 4, 4, "#f2f2f2");
+    R(35, 31, 1, 1, "#a08a6a"); R(37, 31, 1, 1, "#a08a6a"); R(36, 33, 1, 1, "#111"); R(33, 33, 1, 2, "#e0e0e0"); R(27, 35, 1, 1, "#e0e0e0"); R(37, 35, 1, 1, "#e9b7b7");
+  }
+  if (L.pet === "duck") {
+    R(30, 38, 6, 4, "#ffd84a"); R(34, 35, 3, 3, "#ffd84a"); R(37, 36, 2, 1, "#f28a1a"); R(35, 36, 1, 1, "#111"); R(30, 38, 1, 1, "#f2c200");
+  }
+}
+
+const spriteCache = new Map();
+function sprite(L, frame = 0) {
+  const key = JSON.stringify(L) + frame;
+  let c = spriteCache.get(key);
+  if (c) return c;
+  const base = document.createElement("canvas"); base.width = SW; base.height = SH;
+  paint(base.getContext("2d"), L, frame);
+  c = document.createElement("canvas"); c.width = SW; c.height = SH;
+  const g = c.getContext("2d");
+  for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) g.drawImage(base, dx, dy);
+  g.globalCompositeOperation = "source-in"; g.fillStyle = "#1b1b1b"; g.fillRect(0, 0, SW, SH);
+  g.globalCompositeOperation = "source-over"; g.drawImage(base, 0, 0);
+  if (spriteCache.size > 400) spriteCache.clear();
+  spriteCache.set(key, c);
+  return c;
+}
+function drawChar(g, L, x, y, px, frame = 0) {
+  g.imageSmoothingEnabled = false;
+  g.drawImage(sprite(L, frame), Math.round(x), Math.round(y), SW * px, SH * px);
+}
+function baseLook() {
+  return { skin: 1, hair: "short", hairColor: 1, facial: "none", glasses: "none", top: "hoodie", topColor: 0, pants: 0, shoes: "sneakers",
+    head: "none", face: "none", neck: "none", back: "backpack", hand: "none", wrist: "none", waist: "none", pet: "none", gown: false };
+}
+function randomLook(extra) {
+  const L = baseLook();
+  L.skin = Math.floor(Math.random() * SKIN.length);
+  L.hair = pick(HAIR)[0];
+  L.hairColor = Math.random() < .8 ? Math.floor(Math.random() * 6) : Math.floor(Math.random() * HAIRC.length);
+  L.facial = Math.random() < .25 ? pick(FACIAL)[0] : "none";
+  L.glasses = Math.random() < .3 ? pick(GLASSES.slice(1))[0] : "none";
+  L.top = pick(BASE_TOPS)[0];
+  L.topColor = Math.floor(Math.random() * TOPC.length);
+  L.pants = Math.floor(Math.random() * PANTS.length);
+  L.back = Math.random() < .6 ? "backpack" : "none";
+  L.neck = Math.random() < .2 ? "lanyard" : "none";
+  return Object.assign(L, extra || {});
+}
+function equip(L, id) {
+  const it = ITEMS[id];
+  if (it.slot === "top") L.top = id;
+  else if (it.slot === "feet") L.shoes = id;
+  else L[it.slot] = id;
+}
+
+// ===========================================================================
+// STATE + SAVE
+// ===========================================================================
+let S = null;
+const SAVE_KEY = "gradlife-v1";
+function save() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch {} }
+function load() { try { return JSON.parse(localStorage.getItem(SAVE_KEY) || "null"); } catch { return null; } }
+function clearSave() { try { localStorage.removeItem(SAVE_KEY); } catch {} }
+
+function newStudent(majorId) {
+  const m = MAJOR[majorId];
+  const look = baseLook();
+  equip(look, m.start);
+  S = {
+    major: majorId, name: "", hometown: HOMETOWNS[0], hall: "abel", look,
+    stats: { ...m.st }, sanity: 80, money: 30, week: 1, owned: [m.start],
+    encore: m.id === "music", switched: false, raceTries: 0, phase: "create", msg: "", msgKind: "", year: 1, gpas: [], gradBoost: 0,
+    summer: 0, hallApplied: false
+  };
+}
+
+// ===========================================================================
+// SCREENS
+// ===========================================================================
+const screens = ["sTitle", "sMajor", "sCreate", "sHub", "sPlay", "sShop", "sYear", "sGrad"];
+let current = "sTitle";
+function show(id) {
+  current = id;
+  for (const s of screens) $("#" + s).hidden = s !== id;
+  updateBar();
+  window.scrollTo({ top: 0 });
+}
+function updateBar() {
+  const L = $("#barL"), R = $("#barR");
+  if (!S || current === "sTitle") { L.textContent = "Welcome to UNL"; R.textContent = ""; return; }
+  const m = MAJOR[S.major];
+  if (current === "sMajor") { L.textContent = S.phase === "switch" ? "Switching majors" : "Step 1 of 2: Major"; R.textContent = ""; return; }
+  if (current === "sCreate" && S.phase === "create") { L.textContent = "Step 2 of 2: Your student"; R.textContent = m.n; return; }
+  L.textContent = S.phase === "grad" || S.phase === "done" ? "Graduation Day" : `${YEARS[S.year - 1]} year · Week ${Math.min(S.week, WEEKS + S.summer)} of ${WEEKS + S.summer}`;
+  R.textContent = `$${S.money}`;
+}
+
+// ---------- Title ----------
+const titleCv = $("#titleCv"), tg = titleCv.getContext("2d");
+const titleCast = MAJORS.slice(0, 7).map(m => { const L = randomLook(); equip(L, m.start); return L; });
+function drawTitle(t) {
+  const g = tg; g.imageSmoothingEnabled = false;
+  const sky = g.createLinearGradient(0, 0, 0, 200); sky.addColorStop(0, "#9fd0f0"); sky.addColorStop(1, "#e8f4fb");
+  g.fillStyle = sky; g.fillRect(0, 0, 620, 200);
+  drawCampus(g, (t * 20) % 620, 620, 200, .5);
+  g.fillStyle = "#d8cbb5"; g.fillRect(0, 170, 620, 30);
+  g.fillStyle = "#c8b99e"; for (let x = -((t * 60) % 40); x < 620; x += 40) g.fillRect(x, 182, 20, 2);
+  titleCast.forEach((L, i) => {
+    const x = 20 + i * 84, bob = Math.sin(t * 8 + i) > 0 ? 1 : 2;
+    drawChar(g, L, x, 170 - 41 * 2 + 4, 2, bob);
+  });
+}
+
+// ---------- Campus scenery (shared by title, race) ----------
+function drawCampus(g, scroll, W, H, scale) {
+  // brick buildings + trees on a repeating strip
+  const span = 900 * scale;
+  for (let base = -((scroll) % span) - span; base < W + span; base += span) {
+    bldg(g, base + 20 * scale, H - 170 * scale - 30, 200 * scale, 140 * scale, "#a8553f", scale);
+    tree(g, base + 250 * scale, H - 30, scale);
+    bldg(g, base + 320 * scale, H - 130 * scale - 30, 150 * scale, 100 * scale, "#b8663f", scale);
+    tree(g, base + 500 * scale, H - 30, scale);
+    bldg(g, base + 560 * scale, H - 190 * scale - 30, 240 * scale, 160 * scale, "#9a4a36", scale, true);
+    tree(g, base + 840 * scale, H - 30, scale);
+  }
+}
+function bldg(g, x, y, w, h, c, s, columns) {
+  g.fillStyle = shade(c, -.25); g.fillRect(x - 4 * s, y - 6 * s, w + 8 * s, 8 * s);
+  g.fillStyle = c; g.fillRect(x, y, w, h + 40);
+  g.fillStyle = "#f3eee4";
+  if (columns) for (let cx = x + 14 * s; cx < x + w - 10 * s; cx += 26 * s) g.fillRect(cx, y + h * .45, 8 * s, h * .55 + 40);
+  g.fillStyle = "#3e5f78";
+  for (let wy = y + 14 * s; wy < y + h * (columns ? .4 : .85); wy += 28 * s)
+    for (let wx = x + 12 * s; wx < x + w - 18 * s; wx += 26 * s) g.fillRect(wx, wy, 14 * s, 16 * s);
+}
+function tree(g, x, ground, s) {
+  g.fillStyle = "#6b4a2e"; g.fillRect(x - 5 * s, ground - 50 * s, 10 * s, 50 * s);
+  g.fillStyle = "#3f7a34"; g.beginPath(); g.arc(x, ground - 70 * s, 34 * s, 0, 7); g.fill();
+  g.fillStyle = "#4f9140"; g.beginPath(); g.arc(x - 10 * s, ground - 80 * s, 18 * s, 0, 7); g.fill();
+}
+
+// ---------- Major select ----------
+function buildMajors(mode) {
+  const box = $("#majors"); box.innerHTML = "";
+  $("#majorH").textContent = mode === "switch" ? "Switch your major" : "Choose your major";
+  $("#majorLede").textContent = mode === "switch"
+    ? "You get one switch. You keep your stats and gear, and you pick up the new major's perk and starting item."
+    : "Your major sets your starting stats, your special perk and the gear you'll unlock along the way.";
+  for (const m of MAJORS) {
+    if (mode === "switch" && m.id === "undeclared") continue;
+    const b = document.createElement("button");
+    b.className = "mcard";
+    const L = randomLook({ skin: MAJORS.indexOf(m) % SKIN.length, glasses: "none", facial: "none" });
+    equip(L, m.start);
+    b.innerHTML = `<canvas width="${SW}" height="${SH}"></canvas><div>
+      <h3>${m.n}</h3><div class="col">${m.col}</div>
+      <div class="sw"><b class="up">▲ ${m.strong}</b> &nbsp; <b class="down">▼ ${m.weak}</b></div>
+      <div class="perk"><b>${m.perk}:</b> ${m.pd}</div>
+      <div class="perk">Starts with: ${ITEMS[m.start].n}</div></div>`;
+    const g = b.querySelector("canvas").getContext("2d");
+    g.drawImage(sprite(L), 0, 0);
+    b.addEventListener("click", () => chooseMajor(m.id, mode));
+    box.appendChild(b);
+  }
+}
+function chooseMajor(id, mode) {
+  if (mode === "switch") {
+    const m = MAJOR[id];
+    S.major = id; S.switched = true; S.encore = id === "music";
+    if (!S.owned.includes(m.start)) S.owned.push(m.start);
+    equip(S.look, m.start);
+    S.msg = `You switched to ${m.n}. Your advisor sighed, but signed the form.`; S.msgKind = "good";
+    save(); openCreator("mirror");
+    return;
+  }
+  newStudent(id);
+  openCreator("create");
+}
+
+// ---------- Character creator / mirror ----------
+let creatorMode = "create";
+function openCreator(mode) {
+  creatorMode = mode;
+  if (mode === "create") S.phase = "create";
+  else S.phase = "hub";
+  $("#createH").textContent = mode === "create" ? "Build your student" : "Mirror, mirror";
+  $("#bCreateDone").textContent = mode === "create" ? "Start freshman year" : "Back to your room";
+  $("#bSwitchMajor").hidden = !(mode === "mirror" && S.major === "undeclared" && !S.switched);
+  buildOpts();
+  show("sCreate");
+}
+function chipRow(label, opts, val, onPick, sub) {
+  const row = document.createElement("div"); row.className = "opt";
+  row.innerHTML = `<div class="lab">${label}${sub ? `<small>${sub}</small>` : ""}</div><div class="chips"></div>`;
+  const box = row.lastElementChild;
+  for (const o of opts) {
+    const b = document.createElement("button");
+    if (o.color) { b.className = "sw-chip"; b.style.background = o.color; b.title = o.label; b.setAttribute("aria-label", o.label); }
+    else { b.className = "chip" + (o.major ? " major" : ""); b.textContent = o.label; }
+    b.setAttribute("aria-pressed", String(o.value === val));
+    if (o.locked) { b.disabled = true; b.title = o.locked; b.textContent = "🔒 " + o.label; }
+    b.addEventListener("click", () => { onPick(o.value); buildOpts(); });
+    box.appendChild(b);
+  }
+  return row;
+}
+const isMajorGear = id => MAJORS.some(mm => mm.gear.includes(id));
+function lockNote(id) {
+  const i = MAJOR[S.major].gear.indexOf(id);
+  return i > 0 ? `Unlocks after ${YEARS[i - 1].toLowerCase()} year` : "";
+}
+// Options for a slot: owned/free items, plus this major's locked gear as a preview.
+function slotOptions(slot, base) {
+  const m = MAJOR[S.major];
+  const out = base || [{ label: "None", value: "none" }];
+  for (const [id, it] of Object.entries(ITEMS)) {
+    if (it.slot !== slot) continue;
+    if (it.free || S.owned.includes(id)) out.push({ label: it.n, value: id, major: isMajorGear(id) });
+    else if (m.gear.includes(id)) out.push({ label: it.n, value: id, locked: lockNote(id), major: true });
+  }
+  return out;
+}
+function buildOpts() {
+  const box = $("#opts"); box.innerHTML = "";
+  const L = S.look, m = MAJOR[S.major];
+  // identity
+  const nameRow = document.createElement("div"); nameRow.className = "opt";
+  nameRow.innerHTML = `<label for="inName">Name</label><input type="text" id="inName" maxlength="18" placeholder="Your student's name" value="${esc(S.name)}">`;
+  nameRow.querySelector("input").addEventListener("input", e => { S.name = e.target.value; drawPreview(); });
+  box.appendChild(nameRow);
+  if (creatorMode === "create") {
+    const ht = document.createElement("div"); ht.className = "opt";
+    ht.innerHTML = `<label for="inHome">Hometown</label><select id="inHome">${HOMETOWNS.map(h => `<option ${h === S.hometown ? "selected" : ""}>${esc(h)}</option>`).join("")}</select>`;
+    ht.querySelector("select").addEventListener("change", e => { S.hometown = e.target.value; drawPreview(); });
+    box.appendChild(ht);
+    box.appendChild(chipRow("Residence hall", HALLS.map(h => ({ label: h.n, value: h.id })), S.hall, v => S.hall = v, (HALLS.find(h => h.id === S.hall) || {}).perk));
+  }
+  const H = t => { const d = document.createElement("div"); d.className = "group-h"; d.textContent = t; box.appendChild(d); };
+  H("Look");
+  box.appendChild(chipRow("Skin tone", SKIN.map((c, i) => ({ color: c, label: "Skin tone " + (i + 1), value: i })), L.skin, v => L.skin = v));
+  box.appendChild(chipRow("Hair", HAIR.map(([v, l]) => ({ label: l, value: v })), L.hair, v => L.hair = v));
+  box.appendChild(chipRow("Hair color", HAIRC.map((c, i) => ({ color: c, label: "Hair color " + (i + 1), value: i })), L.hairColor, v => L.hairColor = v));
+  box.appendChild(chipRow("Facial hair", FACIAL.map(([v, l]) => ({ label: l, value: v })), L.facial, v => L.facial = v));
+  box.appendChild(chipRow("Glasses", GLASSES.map(([v, l]) => ({ label: l, value: v })), L.glasses, v => L.glasses = v));
+  H("Outfit");
+  box.appendChild(chipRow("Top", slotOptions("top", BASE_TOPS.map(([v, l]) => ({ label: l, value: v }))), L.top, v => L.top = v));
+  box.appendChild(chipRow("Top color", TOPC.map(t => ({ color: t.c, label: t.n, value: TOPC.indexOf(t) })), L.topColor, v => L.topColor = v));
+  box.appendChild(chipRow("Pants", PANTS.map((p, i) => ({ label: p.n, value: i })), L.pants, v => L.pants = v));
+  box.appendChild(chipRow("Shoes", slotOptions("feet", [{ label: "Sneakers", value: "sneakers" }]), L.shoes, v => L.shoes = v));
+  H(`Accessories · gold = ${m.n} gear`);
+  for (const [slot, label] of [["head", "Head"], ["face", "Face"], ["neck", "Neck"], ["back", "Back"], ["hand", "In hand"], ["wrist", "Wrist"], ["waist", "Waist"], ["pet", "Pet"]]) {
+    const opts = slotOptions(slot);
+    if (opts.length > 1) box.appendChild(chipRow(label, opts, L[slot] || "none", v => L[slot] = v));
+  }
+  const prog = document.createElement("div"); prog.className = "opt";
+  prog.innerHTML = `<div class="lab">${esc(m.n)} gear<small>${m.gear.filter(id => S.owned.includes(id)).length} of ${m.gear.length} unlocked</small></div><div class="chips">${m.gear.map(id =>
+    S.owned.includes(id) ? `<span class="chip major" aria-pressed="false">✓ ${esc(ITEMS[id].n)}</span>` : `<span class="chip" title="${lockNote(id)}" style="color:#a9a9a9;border-style:dashed">🔒 ${esc(ITEMS[id].n)}</span>`).join("")}</div>`;
+  box.appendChild(prog);
+  drawPreview();
+}
+const prevCv = $("#prevCv"), pg = prevCv.getContext("2d");
+let prevFrame = 0;
+function drawPreview() {
+  if (!S) return;
+  pg.clearRect(0, 0, 92, 96);
+  drawChar(pg, S.look, 0, 0, 2, prevFrame);
+  const m = MAJOR[S.major];
+  $("#prevName").textContent = S.name.trim() || "Your student";
+  $("#prevSub").textContent = `${m.n} · from ${S.hometown}`;
+}
+$("#bRandom").addEventListener("click", () => {
+  const keep = { top: S.look.top, shoes: S.look.shoes, head: S.look.head, face: S.look.face, neck: S.look.neck, back: S.look.back, hand: S.look.hand };
+  const L = randomLook(keep);
+  if (!S.owned.includes(L.top) && ITEMS[L.top]) L.top = "hoodie";
+  S.look = L; buildOpts();
+});
+$("#bCreateDone").addEventListener("click", () => {
+  if (!S.name.trim()) S.name = pick(["Alex", "Jordan", "Sam", "Taylor", "Riley", "Casey", "Morgan", "Jamie"]);
+  if (creatorMode === "create") {
+    const hall = HALLS.find(h => h.id === S.hall);
+    if (!S.hallApplied) { applyFx(hall.fx); S.hallApplied = true; }
+    S.phase = "hub";
+    S.msg = welcomeLine(); S.msgKind = "";
+  }
+  save(); openHub();
+});
+$("#bSwitchMajor").addEventListener("click", () => { S.phase = "switch"; buildMajors("switch"); show("sMajor"); });
+function welcomeLine() {
+  const hall = HALLS.find(h => h.id === S.hall).n;
+  if (S.hometown.startsWith("A small town")) return `Welcome to ${hall}! Someone already asked if your hometown is “near Omaha.” It is not.`;
+  if (S.hometown === "Lincoln") return `Welcome to ${hall}! You live 10 minutes from home and still packed like it's a different country.`;
+  if (S.hometown === "Out of state") return `Welcome to ${hall}! You've been told corn jokes four times already.`;
+  if (S.hometown === "Omaha") return `Welcome to ${hall}! You've already mentioned you're from Omaha three times.`;
+  return `Welcome to ${hall}, ${S.name}! Pick something to do this week.`;
+}
+
+// ---------- Hub ----------
+const dormCv = $("#dormCv"), dg = dormCv.getContext("2d");
+function applyFx(fx) {
+  const out = [];
+  for (const [k, v] of Object.entries(fx || {})) {
+    if (k === "money") S.money = Math.max(0, S.money + v);
+    else if (k === "sanity") S.sanity = clamp(S.sanity + v, 0, 100);
+    else S.stats[k] = clamp(S.stats[k] + v, 0, 100);
+    out.push(v);
+  }
+  return out;
+}
+function fxText(fx) {
+  const nm = { money: "$", sanity: "Sanity", brains: "Brains", stamina: "Stamina", social: "Social", wallet: "Wallet" };
+  return Object.entries(fx).map(([k, v]) => k === "money" ? `${v > 0 ? "+" : "-"}$${Math.abs(v)}` : `${v > 0 ? "+" : ""}${v} ${nm[k]}`).join(", ");
+}
+const FAIR_NAMES = ["Involvement Fair", "Club Rush", "Career Fair", "Networking Night"];
+function actName(a) { return a.id === "fair" ? FAIR_NAMES[(S && S.year || 1) - 1] : a.n; }
+const ACTS = [
+  { id: "lecture", n: "Lecture Survival", stat: "brains", ic: "B", c: "#3b6fb6", d: "Catch the key facts. Dodge the professor's tangents." },
+  { id: "allnighter", n: "All-Nighter", stat: "stamina", ic: "S", c: "#7a4dc2", d: "Keep yourself awake (but not too awake) until sunrise." },
+  { id: "fair", n: "Involvement Fair", stat: "social", ic: "F", c: "#e07a1f", d: "Say hi to new friends. Avoid the “business opportunity” guy." },
+  { id: "shift", n: "Dining Hall Shift", stat: "wallet", ic: "$", c: "#1d7a3c", d: "Fill orders fast. Earns cash and raises Wallet." },
+  { id: "nap", n: "Take a nap", stat: null, ic: "Z", c: "#5a6b7a", d: "Restore 40 Sanity. Your body thanks you." },
+  { id: "shop", n: "Campus store", stat: null, ic: "★", c: "#b8860b", d: "Snacks, gear and things to wear. Doesn't use a week." },
+  { id: "mirror", n: "Mirror", stat: null, ic: "☺", c: "#ba1f1f", d: "Change your look and gear. Doesn't use a week." }
+];
+function openHub() {
+  S.phase = "hub";
+  show("sHub");
+  renderHub();
+}
+function finalsForced() { return S.week > WEEKS + S.summer; }
+function renderHub() {
+  const m = MAJOR[S.major];
+  $("#hubName").textContent = S.name;
+  $("#hubSub").textContent = `${m.n} · ${HALLS.find(h => h.id === S.hall).n} · from ${S.hometown}`;
+  $("#hubH").textContent = finalsForced() ? "Finals week: time to race!" : `${YEARS[S.year - 1]} year · Week ${S.week} of ${WEEKS + S.summer}`;
+  const st = $("#stats"); st.innerHTML = "";
+  for (const [k, n] of STATS) {
+    st.insertAdjacentHTML("beforeend", `<div class="stat"><span class="nm">${n}</span><span class="meter"><i style="width:${S.stats[k]}%"></i></span><span class="v">${S.stats[k]}</span></div>`);
+  }
+  st.insertAdjacentHTML("beforeend", `<div class="stat sanity ${S.sanity < 25 ? "low" : ""}"><span class="nm">Sanity</span><span class="meter"><i style="width:${S.sanity}%"></i></span><span class="v">${S.sanity}</span></div>`);
+  const msg = $("#msg");
+  msg.textContent = S.msg || "";
+  msg.className = "msg " + (S.msgKind || "");
+  if (S.sanity < 25 && !S.msg) { msg.textContent = "Your Sanity is low: training gains are cut in half. Maybe take a nap?"; msg.className = "msg bad"; }
+
+  const box = $("#acts"); box.innerHTML = "";
+  const forced = finalsForced();
+  for (const a of ACTS) {
+    const b = document.createElement("button");
+    b.className = "act";
+    b.disabled = forced && (a.stat || a.id === "nap");
+    b.innerHTML = `<div class="ic" style="background:${a.c}">${a.ic}</div><div><b>${actName(a)}</b><span>${a.d}</span></div>`;
+    b.addEventListener("click", () => doAct(a.id));
+    box.appendChild(b);
+  }
+  const r = document.createElement("button");
+  r.className = "act race";
+  const open = S.week >= RACE_OPENS || forced;
+  r.disabled = !open;
+  const C = RACES[S.year - 1];
+  r.innerHTML = `<div class="ic" style="background:var(--red)">\u2691</div><div><b>Final race: ${C.n}</b><span>${open
+    ? `${C.blurb} Finish in the top 2 to pass the year. Your speed comes from ${statWords(C.w)}.${S.encore ? " (Encore: your first loss is free.)" : " Each try uses a week."}`
+    : `Opens in week ${RACE_OPENS}. This year your speed comes from ${statWords(C.w)}, Brains helps you take shortcuts and Social gets friends cheering.`}</span></div>`;
+  r.addEventListener("click", () => doAct("race"));
+  box.appendChild(r);
+  updateBar();
+}
+function drawDorm(t) {
+  const g = dg; g.imageSmoothingEnabled = false;
+  g.fillStyle = "#e9dcc3"; g.fillRect(0, 0, 300, 200);
+  g.fillStyle = "#d9c9aa"; for (let y = 0; y < 150; y += 12) g.fillRect(0, y, 300, 1);
+  g.fillStyle = "#9c7b5b"; g.fillRect(0, 150, 300, 50);
+  g.fillStyle = "#8a6b4d"; for (let x = 0; x < 300; x += 30) g.fillRect(x, 150, 1, 50);
+  // window
+  g.fillStyle = "#6b4a2e"; g.fillRect(196, 24, 82, 66);
+  const day = g.createLinearGradient(0, 28, 0, 86); day.addColorStop(0, "#8fc7ee"); day.addColorStop(1, "#cfe8f7");
+  g.fillStyle = day; g.fillRect(200, 28, 74, 58);
+  g.fillStyle = "#6b4a2e"; g.fillRect(236, 28, 2, 58); g.fillRect(200, 56, 74, 2);
+  // pennant
+  g.fillStyle = "#d00000"; g.beginPath(); g.moveTo(24, 26); g.lineTo(96, 38); g.lineTo(24, 50); g.fill();
+  g.fillStyle = "#fff"; g.font = "8px 'Press Start 2P', monospace"; g.fillText("GO BIG", 30, 42);
+  // bed
+  g.fillStyle = "#5a6b7a"; g.fillRect(10, 112, 110, 44); g.fillStyle = "#efe6d0"; g.fillRect(14, 106, 30, 14);
+  g.fillStyle = "#d00000"; g.fillRect(44, 110, 76, 40);
+  // desk + laptop
+  g.fillStyle = "#7a5638"; g.fillRect(196, 118, 92, 8); g.fillRect(200, 126, 6, 30); g.fillRect(278, 126, 6, 30);
+  g.fillStyle = "#c7c9cc"; g.fillRect(222, 104, 34, 14); g.fillStyle = "#3a6fb6"; g.fillRect(225, 106, 28, 10);
+  // ramen
+  g.fillStyle = "#fff"; g.fillRect(264, 108, 14, 10); g.fillStyle = "#d00000"; g.fillRect(264, 110, 14, 3);
+  // character
+  const bob = Math.floor(t * 2) % 2;
+  drawChar(g, S.look, 118, 160 - 41 * 2 + bob, 2, 0);
+  if (S.sanity < 25) { g.fillStyle = "#3b6fb6"; g.font = "10px 'Press Start 2P', monospace"; g.fillText("z", 196, 76 - (t * 10 % 10)); }
+}
+function doAct(id) {
+  S.msg = ""; S.msgKind = "";
+  if (id === "shop") { openShop(); return; }
+  if (id === "mirror") { openCreator("mirror"); return; }
+  if (id === "nap") {
+    const gain = Math.min(40, 100 - S.sanity);
+    S.sanity += gain;
+    endWeek(`You napped like it was your job. +${gain} Sanity.`, "good");
+    return;
+  }
+  if (id === "race") { startRace(); return; }
+  const a = ACTS.find(x => x.id === id);
+  playMinigame(MINIGAMES[id](), a);
+}
+function endWeek(text, kind) {
+  S.week++;
+  let line = text;
+  if (Math.random() < .35) {
+    const ev = pick(EVENTS.concat(YEAR_EVENTS[S.year - 1] || []));
+    applyFx(ev.fx);
+    line += ` Also: ${ev.t} (${fxText(ev.fx)})`;
+  }
+  if (S.sanity <= 0) {
+    S.week++; S.sanity = 45;
+    line += " Then you burned out and binge-watched three seasons of a show. You lost a week.";
+    kind = "bad";
+  }
+  if (finalsForced()) line += " It's finals week: the race is the only thing left to do.";
+  S.msg = line; S.msgKind = kind || "";
+  save(); openHub();
+}
+
+// ---------- Shop ----------
+const SHOP = [
+  { id: "ramen", n: "Instant ramen (6-pack)", d: "+12 Sanity. Dinner of champions.", price: 8, fx: { sanity: 12 } },
+  { id: "icedcoffee", n: "Iced coffee", d: "+20 Sanity. Basically a personality.", price: 14, fx: { sanity: 20 } },
+  { id: "textbook", n: "Used textbook", d: "+4 Brains. “Lightly highlighted” (every page).", price: 40, fx: { brains: 4 }, once: true },
+  { id: "shoes", n: "Running shoes", d: "+4 Stamina. You'll actually make it up the stairs.", price: 45, fx: { stamina: 4 }, once: true },
+  { id: "club", n: "Club membership dues", d: "+4 Social. Includes a free T-shirt.", price: 30, fx: { social: 4 }, once: true },
+  { id: "beanie", n: "Scarlet beanie", d: "Cosmetic. Head slot.", price: 25, item: true },
+  { id: "cap", n: "Backward cap", d: "Cosmetic. Head slot.", price: 25, item: true },
+  { id: "sunglasses", n: "Sunglasses", d: "Cosmetic. Face slot. Worn indoors, obviously.", price: 20, item: true },
+  { id: "coffee", n: "Giant iced coffee cup", d: "Cosmetic. In-hand slot.", price: 15, item: true }
+];
+function openShop() { show("sShop"); renderShop(); }
+function renderShop() {
+  const box = $("#shop"); box.innerHTML = "";
+  S.bought = S.bought || [];
+  for (const it of SHOP) {
+    const owned = it.item ? S.owned.includes(it.id) : (it.once && S.bought.includes(it.id));
+    const d = document.createElement("div"); d.className = "item";
+    d.innerHTML = `<b>${it.n}</b><span>${it.d}</span><div class="row"><span class="price">$${it.price}</span>
+      <button class="btn ${owned ? "ghost" : ""}" ${owned || S.money < it.price ? "disabled" : ""}>${owned ? "Owned" : "Buy"}</button></div>`;
+    d.querySelector("button").addEventListener("click", () => {
+      if (S.money < it.price) return;
+      S.money -= it.price;
+      if (it.item) { S.owned.push(it.id); equip(S.look, it.id); }
+      else { applyFx(it.fx); if (it.once) S.bought.push(it.id); }
+      save(); renderShop(); updateBar();
+    });
+    box.appendChild(d);
+  }
+}
+$("#bShopBack").addEventListener("click", () => openHub());
+
+// ===========================================================================
+// PLAY: minigame + race runner
+// ===========================================================================
+const gameCv = $("#gameCv"), gg = gameCv.getContext("2d");
+const GW = 640, GH = 400;
+let G = null;          // active game object
+let gRunning = false;
+function sizeGame() {
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  gameCv.width = GW * dpr; gameCv.height = GH * dpr;
+  gg.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+sizeGame();
+function gpos(ev) {
+  const r = gameCv.getBoundingClientRect();
+  return [(ev.clientX - r.left) * GW / r.width, (ev.clientY - r.top) * GH / r.height];
+}
+gameCv.addEventListener("pointerdown", ev => { if (gRunning && G.down) { ev.preventDefault(); G.down(...gpos(ev)); } });
+gameCv.addEventListener("pointermove", ev => { if (gRunning && G.move) G.move(...gpos(ev), ev.pointerType); });
+document.addEventListener("keydown", ev => {
+  if (current !== "sPlay" || !G) return;
+  if (gRunning && G.key) { if ([" ", "ArrowUp", "ArrowLeft", "ArrowRight", "ArrowDown"].includes(ev.key)) ev.preventDefault(); G.key(ev.key, true); }
+  else if (!gRunning && (ev.key === "Enter" || ev.key === " ")) { const b = $("#panel button"); if (b) { ev.preventDefault(); b.click(); } }
+});
+document.addEventListener("keyup", ev => { if (gRunning && G && G.key) G.key(ev.key, false); });
+
+function panel(html) { const p = $("#panel"); p.innerHTML = `<div class="card">${html}</div>`; p.hidden = false; return p; }
+
+function playMinigame(game, act) {
+  G = game; gRunning = false;
+  show("sPlay");
+  $("#playNote").textContent = `Week ${S.week} · Training ${actName(act)} raises ${act.stat ? act.stat[0].toUpperCase() + act.stat.slice(1) : ""}.`;
+  game.draw(gg);
+  panel(`<div class="kick">Week ${S.week} · ${act.stat.toUpperCase()} training</div><h3>${game.title}</h3><p>${game.how}</p><div class="ctl">${game.ctl}</div><button class="btn big">Start</button>`)
+    .querySelector("button").addEventListener("click", () => { $("#panel").hidden = true; gRunning = true; });
+  game.onEnd = f => finishMinigame(act, f, game);
+}
+function finishMinigame(act, f, game) {
+  gRunning = false;
+  const m = MAJOR[S.major];
+  let gain = Math.round(2 + f * 6);
+  if (m.id === "engineering" && act.stat === "brains") gain += 2;
+  if (m.id === "nursing" && act.stat === "stamina") gain += 2;
+  if (S.sanity < 25) gain = Math.ceil(gain / 2);
+  const fx = {}; fx[act.stat] = gain;
+  if (game.money) fx.money = game.money;
+  fx.sanity = -Math.round(10 * m.san);
+  const before = S.stats[act.stat];
+  applyFx(fx);
+  fx[act.stat] = S.stats[act.stat] - before;
+  const grade = f >= .85 ? "Amazing!" : f >= .6 ? "Nice work!" : f >= .35 ? "Not bad." : "Rough week.";
+  const spans = Object.entries(fx).map(([k, v]) => `<span class="${v >= 0 ? "p" : "n"}">${fxText({ [k]: v })}</span>`).join("");
+  panel(`<div class="kick">${game.title}</div><h3>${grade}</h3><p>${game.summary}</p><div class="gains">${spans}</div><button class="btn big">Back to your room</button>`)
+    .querySelector("button").addEventListener("click", () => endWeek(`${game.title}: ${grade} (${fxText(fx)})`, f >= .35 ? "good" : ""));
+}
+
+// ---------- Minigame helpers ----------
+function hudText(g, left, right) {
+  g.font = "12px 'Press Start 2P', monospace"; g.textBaseline = "top";
+  g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(0, 0, GW, 30);
+  g.fillStyle = "#fff"; g.textAlign = "left"; g.fillText(left, 10, 9);
+  g.textAlign = "right"; g.fillText(right, GW - 10, 9);
+  g.textAlign = "left";
+}
+function popText(list, x, y, text, color) { list.push({ x, y, text, color, t: 0 }); }
+function drawPops(g, list, dt) {
+  g.font = "12px 'Press Start 2P', monospace"; g.textAlign = "center"; g.textBaseline = "middle";
+  for (const p of list) {
+    p.t += dt;
+    g.globalAlpha = Math.max(0, 1 - p.t / .8);
+    g.fillStyle = "#000"; g.fillText(p.text, p.x + 1, p.y - p.t * 40 + 1);
+    g.fillStyle = p.color; g.fillText(p.text, p.x, p.y - p.t * 40);
+  }
+  g.globalAlpha = 1; g.textAlign = "left";
+  for (let i = list.length - 1; i >= 0; i--) if (list[i].t > .8) list.splice(i, 1);
+}
+
+const MINIGAMES = {
+  // ---- BRAINS ----
+  lecture() {
+    const G = { title: "Lecture Survival", how: "Your professor is talking fast. Catch the yellow key facts in your notebook. Gold stars are worth 3. Gray speech bubbles are tangents: they cost you 2.",
+      ctl: "Drag or move the mouse to steer · or use the ← → arrow keys", t: 20, score: 0, x: GW / 2, tx: GW / 2, items: [], pops: [], spawn: 0, keys: {}, done: false };
+    G.move = (x) => { G.tx = x; };
+    G.down = (x) => { G.tx = x; };
+    G.key = (k, d) => { G.keys[k] = d; };
+    G.update = dt => {
+      G.t -= dt;
+      if (G.keys.ArrowLeft) G.tx = G.x - 400 * dt * 3;
+      if (G.keys.ArrowRight) G.tx = G.x + 400 * dt * 3;
+      G.tx = clamp(G.tx, 50, GW - 50);
+      G.x += clamp(G.tx - G.x, -620 * dt, 620 * dt);
+      G.spawn -= dt;
+      if (G.spawn <= 0) {
+        G.spawn = rand(.42, .7);
+        const r = Math.random();
+        G.items.push({ x: rand(40, GW - 40), y: 40, vy: rand(130, 190) + (20 - G.t) * 5 + (S.year - 1) * 18, k: r < .06 ? "gold" : r < .38 ? "tan" : "fact" });
+      }
+      for (const it of G.items) {
+        it.y += it.vy * dt;
+        if (!it.gone && it.y > 330 && it.y < 360 && Math.abs(it.x - G.x) < 58) {
+          it.gone = true;
+          if (it.k === "fact") { G.score += 1; popText(G.pops, it.x, 320, "+1", "#f2c200"); }
+          if (it.k === "gold") { G.score += 3; popText(G.pops, it.x, 320, "+3", "#ffd84a"); }
+          if (it.k === "tan") { G.score = Math.max(0, G.score - 2); popText(G.pops, it.x, 320, "TANGENT -2", "#ff7a7a"); }
+        }
+      }
+      G.items = G.items.filter(i => !i.gone && i.y < GH + 30);
+      if (G.t <= 0) { G.t = 0; G.summary = `You caught ${G.score} points' worth of notes.`; G.onEnd(clamp(G.score / 20, 0, 1)); }
+    };
+    G.draw = (g, dt = 0) => {
+      g.fillStyle = "#e9dcc3"; g.fillRect(0, 0, GW, GH);
+      g.fillStyle = "#2f4a3a"; g.fillRect(40, 40, GW - 80, 150); g.fillStyle = "#6b4a2e"; g.fillRect(36, 186, GW - 72, 8);
+      g.strokeStyle = "rgba(255,255,255,.55)"; g.lineWidth = 2;
+      g.beginPath(); g.moveTo(70, 80); g.lineTo(200, 80); g.moveTo(70, 100); g.lineTo(160, 100); g.moveTo(260, 70); g.quadraticCurveTo(300, 120, 360, 80); g.moveTo(420, 90); g.lineTo(560, 90); g.moveTo(440, 120); g.lineTo(520, 150); g.stroke();
+      g.fillStyle = "rgba(255,255,255,.7)"; g.font = "12px 'Press Start 2P', monospace"; g.fillText("E = mc² ?", 420, 150);
+      // desks
+      g.fillStyle = "#b08a5c"; g.fillRect(0, 360, GW, 40);
+      for (const it of G.items) {
+        if (it.k === "fact") { g.fillStyle = "#ffe066"; g.fillRect(it.x - 13, it.y - 13, 26, 26); g.fillStyle = "#c9a400"; g.fillRect(it.x - 13, it.y - 13, 26, 4); g.fillStyle = "#333"; g.fillRect(it.x - 2, it.y - 6, 4, 10); g.fillRect(it.x - 2, it.y + 6, 4, 4); }
+        else if (it.k === "gold") { star(g, it.x, it.y, 16, "#ffcc00"); }
+        else { g.fillStyle = "#b9b9b9"; g.beginPath(); g.ellipse(it.x, it.y, 24, 15, 0, 0, 7); g.fill(); g.beginPath(); g.moveTo(it.x - 8, it.y + 10); g.lineTo(it.x - 16, it.y + 22); g.lineTo(it.x, it.y + 12); g.fill(); g.fillStyle = "#555"; for (let i = -1; i <= 1; i++) g.fillRect(it.x + i * 8 - 2, it.y - 2, 4, 4); }
+      }
+      // notebook catcher
+      g.fillStyle = "#f7f3e8"; g.fillRect(G.x - 58, 340, 116, 22); g.fillStyle = "#7f9bb5"; for (let i = 0; i < 3; i++) g.fillRect(G.x - 50, 346 + i * 6, 100, 1);
+      g.fillStyle = "#d00000"; g.fillRect(G.x - 1, 338, 2, 26);
+      hudText(g, `NOTES ${G.score}`, `${Math.ceil(G.t)}s`);
+      drawPops(g, G.pops, dt);
+    };
+    return G;
+  },
+
+  // ---- STAMINA ----
+  allnighter() {
+    const arch = S.major === "architecture";
+    const lo = arch ? 30 : 42, hi = arch ? 82 : 72;
+    const G = { title: "All-Nighter", how: `It's 11 p.m. and your paper is due at 8. Keep your alertness in the green zone until sunrise. Drink coffee to wake up, but too much and you get the jitters.`,
+      ctl: "Tap / click / Space to sip coffee", t: 20, a: 58, inZone: 0, pops: [], sip: 0, lo, hi };
+    G.down = () => sip();
+    G.key = (k, d) => { if (d && (k === " " || k === "ArrowUp")) sip(); };
+    function sip() { G.a = Math.min(100, G.a + 11); G.sip = .25; }
+    G.update = dt => {
+      G.t -= dt;
+      G.a -= (8 + (S.year - 1) * 1.3 + (20 - G.t) * .75) * dt;
+      G.a = clamp(G.a, 0, 100);
+      if (G.a >= lo && G.a <= hi) G.inZone += dt;
+      G.sip = Math.max(0, G.sip - dt);
+      if (G.t <= 0) { G.t = 0; G.summary = `You spent ${Math.round(G.inZone)} of 20 seconds in the zone. The paper is… done. Technically.`; G.onEnd(clamp(G.inZone / 17, 0, 1)); }
+    };
+    G.draw = (g) => {
+      const prog = 1 - G.t / 20;
+      const sky = g.createLinearGradient(0, 0, 0, GH);
+      sky.addColorStop(0, mix("#0b1430", "#f2a65a", prog * prog)); sky.addColorStop(1, mix("#1f2a4d", "#ffd9a0", prog * prog));
+      g.fillStyle = "#3a3050"; g.fillRect(0, 0, GW, GH);
+      g.fillStyle = sky; g.fillRect(380, 50, 180, 120);
+      g.fillStyle = "#5a4630"; g.fillRect(376, 46, 188, 4); g.fillRect(376, 170, 188, 4); g.fillRect(468, 50, 4, 120);
+      // desk + lamp glow
+      g.fillStyle = "rgba(255,220,120,.12)"; g.beginPath(); g.moveTo(120, 120); g.lineTo(40, 330); g.lineTo(330, 330); g.fill();
+      g.fillStyle = "#6b4a2e"; g.fillRect(0, 300, GW, 100);
+      g.fillStyle = "#c7c9cc"; g.fillRect(250, 258, 110, 46); g.fillStyle = "#cfe3ff"; g.fillRect(256, 262, 98, 36);
+      g.fillStyle = "#333"; for (let i = 0; i < 5; i++) g.fillRect(264, 268 + i * 6, 40 + (i * 13) % 40, 2);
+      g.fillStyle = "#fff"; g.fillRect(380, 268, 26, 34); g.fillStyle = "#6b4226"; g.fillRect(380, 276, 26, 8);
+      // character, shaking if jittery
+      const jit = G.a > 90 ? rand(-3, 3) : 0;
+      drawChar(g, S.look, 100 + jit, 300 - 41 * 4 + 40, 4, 0);
+      // eyelids
+      const lid = clamp((45 - G.a) / 45, 0, 1);
+      if (lid > 0) { g.fillStyle = SKIN[S.look.skin]; g.fillRect(100 + jit + (12 + 7) * 4, 300 - 164 + 40 + (11 + 1) * 4, 2 * 4, 2 * 4 * lid); g.fillRect(100 + jit + (18 + 7) * 4, 300 - 164 + 40 + (11 + 1) * 4, 2 * 4, 2 * 4 * lid); }
+      if (G.sip > 0) { g.fillStyle = "#fff"; g.fillRect(208 + jit, 226, 18, 24); g.fillStyle = "#6b4226"; g.fillRect(208 + jit, 234, 18, 8); g.fillStyle = "rgba(255,255,255,.6)"; g.fillRect(214 + jit, 212, 2, 8); g.fillRect(220 + jit, 208, 2, 8); }
+      // meter
+      const mx = 590, my = 50, mh = 300;
+      g.fillStyle = "#111"; g.fillRect(mx - 4, my - 4, 32, mh + 8);
+      g.fillStyle = "#c0392b"; g.fillRect(mx, my, 24, mh * .1);
+      g.fillStyle = "#555"; g.fillRect(mx, my + mh * .1, 24, mh * .9);
+      g.fillStyle = "#2ecc71"; g.fillRect(mx, my + mh * (1 - hi / 100), 24, mh * (hi - lo) / 100);
+      const ny = my + mh * (1 - G.a / 100);
+      g.fillStyle = "#fff"; g.fillRect(mx - 10, ny - 2, 44, 4);
+      g.font = "10px 'Press Start 2P', monospace"; g.fillStyle = "#fff"; g.textAlign = "center"; g.fillText("AWAKE", mx + 12, my + mh + 20); g.textAlign = "left";
+      const hour = 23 + prog * 7, hh = Math.floor(hour) % 24, mm = Math.floor((hour % 1) * 60);
+      const label = `${((hh + 11) % 12) + 1}:${String(mm).padStart(2, "0")} ${hh >= 12 && hh < 24 ? "PM" : "AM"}`;
+      hudText(g, label, G.a > 90 ? "JITTERY!" : G.a < lo ? "ZZZ..." : "IN THE ZONE");
+    };
+    return G;
+  },
+
+  // ---- SOCIAL ----
+  fair() {
+    const spots = [];
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 4; c++) spots.push({ x: 90 + c * 153, y: 190 + r * 155, pop: null, look: randomLook() });
+    const recruiter = randomLook({ top: "qzip", topColor: 2, face: "sunglasses", hair: "short", hairColor: 0, back: "none", hand: "padfolio" });
+    const G = { title: FAIR_NAMES[S.year - 1], how: "The Union is packed with tables. Tap students who wave hi (+1) and free T-shirts (+2). Do NOT tap the guy with the “business opportunity” (-2).",
+      ctl: "Tap or click", t: 20, score: 0, spots, pops: [], spawn: .4, recruiter };
+    G.down = (x, y) => {
+      for (const s of G.spots) {
+        if (!s.pop || s.pop.hit) continue;
+        if (Math.abs(x - s.x) < 64 && y > s.y - 125 && y < s.y + 25) {
+          s.pop.hit = true; s.pop.life = Math.min(s.pop.life, .25);
+          if (s.pop.k === "friend") { G.score += 1; popText(G.pops, s.x, s.y - 90, "+1", "#2ecc71"); }
+          if (s.pop.k === "shirt") { G.score += 2; popText(G.pops, s.x, s.y - 90, "+2", "#f2c200"); }
+          if (s.pop.k === "mlm") { G.score = Math.max(0, G.score - 2); popText(G.pops, s.x, s.y - 90, "-2", "#ff5a5a"); }
+          return;
+        }
+      }
+    };
+    G.update = dt => {
+      G.t -= dt;
+      G.spawn -= dt;
+      if (G.spawn <= 0) {
+        G.spawn = rand(.35, .6);
+        const free = G.spots.filter(s => !s.pop);
+        if (free.length) {
+          const s = pick(free), r = Math.random();
+          s.look = randomLook();
+          s.pop = { k: r < .3 ? "mlm" : r < .42 ? "shirt" : "friend", life: rand(.85, 1.15) - (20 - G.t) * .012 - (S.year - 1) * .06, age: 0 };
+        }
+      }
+      for (const s of G.spots) if (s.pop) { s.pop.life -= dt; s.pop.age += dt; if (s.pop.life <= 0) s.pop = null; }
+      if (G.t <= 0) {
+        G.t = 0;
+        const mult = S.major === "business" ? 2 : 1;
+        G.money = Math.round(G.score * 1.5) * mult;
+        G.summary = `You made ${G.score} points' worth of connections${mult > 1 ? " (Networking perk: double cash)" : ""}.`;
+        G.onEnd(clamp(G.score / 16, 0, 1));
+      }
+    };
+    G.draw = (g, dt = 0) => {
+      g.fillStyle = "#d8cbb5"; g.fillRect(0, 0, GW, GH);
+      g.fillStyle = "#c9bba2"; for (let x = 0; x < GW; x += 40) for (let y = 0; y < GH; y += 40) if ((x + y) % 80 === 0) g.fillRect(x, y, 40, 40);
+      g.fillStyle = "#d00000"; g.fillRect(0, 30, GW, 22); g.fillStyle = "#fff"; g.font = "10px 'Press Start 2P', monospace"; g.textAlign = "center"; g.fillText("STUDENT INVOLVEMENT FAIR", GW / 2, 45); g.textAlign = "left";
+      for (const s of G.spots) {
+        if (s.pop) {
+          const rise = Math.min(1, s.pop.age / .12);
+          if (s.pop.k === "shirt") { tshirt(g, s.x, s.y - 40 - rise * 20); }
+          else {
+            const L = s.pop.k === "mlm" ? G.recruiter : s.look;
+            g.save(); g.beginPath(); g.rect(s.x - 64, s.y - 120, 128, 108); g.clip();
+            drawChar(g, L, s.x - 46, s.y - 12 - 86 * rise, 2, 0);
+            g.restore();
+            if (rise >= 1) bubble(g, s.x + 34, s.y - 108, s.pop.k === "mlm" ? "OPPORTUNITY!" : "HEY!", s.pop.k === "mlm" ? "#d00000" : "#1d7a3c");
+          }
+        }
+        g.fillStyle = "#6b4a2e"; g.fillRect(s.x - 64, s.y - 12, 128, 10);
+        g.fillStyle = ["#3b6fb6", "#d00000", "#2f6b45", "#7a4dc2", "#e07a1f"][Math.floor(s.x + s.y) % 5]; g.fillRect(s.x - 64, s.y - 2, 128, 30);
+      }
+      hudText(g, `FRIENDS ${G.score}`, `${Math.ceil(G.t)}s`);
+      drawPops(g, G.pops, dt);
+    };
+    return G;
+  },
+
+  // ---- WALLET ----
+  shift() {
+    const FOODS = ["burger", "fries", "salad", "pizza", "soda"];
+    const G = { title: "Dining Hall Shift", how: "Orders are coming in fast. Tap the food in the exact order shown on the ticket. A wrong tap scraps the tray.",
+      ctl: "Tap the food buttons · or press keys 1–5", t: 20, done: 0, idx: 0, order: [], shake: 0, pops: [], cust: randomLook() };
+    const newOrder = () => { G.order = Array.from({ length: Math.min(5, (G.done >= 4 ? 4 : 3) + (S.year >= 3 ? 1 : 0)) }, () => pick(FOODS)); G.idx = 0; G.cust = randomLook(); };
+    newOrder();
+    const btnX = i => 40 + i * 116;
+    function tap(i) {
+      if (G.order[G.idx] === FOODS[i]) {
+        G.idx++;
+        if (G.idx >= G.order.length) { G.done++; popText(G.pops, 320, 210, "ORDER UP!", "#2ecc71"); newOrder(); }
+      } else { G.shake = .3; G.idx = 0; popText(G.pops, 320, 210, "WRONG!", "#ff5a5a"); }
+    }
+    G.down = (x, y) => { if (y > 300) for (let i = 0; i < 5; i++) if (x > btnX(i) && x < btnX(i) + 100) tap(i); };
+    G.key = (k, d) => { if (d && k >= "1" && k <= "5") tap(+k - 1); };
+    G.update = dt => {
+      G.t -= dt; G.shake = Math.max(0, G.shake - dt);
+      if (G.t <= 0) {
+        G.t = 0;
+        G.money = Math.round((10 + G.done * 6) * (1 + S.stats.wallet / 60));
+        G.summary = `You filled ${G.done} orders. Your manager nodded at you once. That's basically a promotion.`;
+        G.onEnd(clamp(G.done / 8, 0, 1));
+      }
+    };
+    G.draw = (g, dt = 0) => {
+      g.fillStyle = "#cfd8dc"; g.fillRect(0, 0, GW, GH);
+      g.fillStyle = "#b0bec5"; for (let x = 0; x < GW; x += 32) g.fillRect(x, 0, 1, 240);
+      drawChar(g, G.cust, 30, 60, 2, 0);
+      bubble(g, 150, 70, "I'M STARVING", "#333");
+      g.fillStyle = "#90a4ae"; g.fillRect(0, 210, GW, 30); g.fillStyle = "#78909c"; g.fillRect(0, 236, GW, 6);
+      // ticket
+      const sx = G.shake > 0 ? rand(-5, 5) : 0;
+      g.fillStyle = "#fffdf5"; g.fillRect(230 + sx, 50, 380, 110); g.fillStyle = "#d00000"; g.fillRect(230 + sx, 50, 380, 8);
+      g.fillStyle = "#333"; g.font = "10px 'Press Start 2P', monospace"; g.fillText(`ORDER #${100 + G.done}`, 244 + sx, 76);
+      G.order.forEach((f, i) => {
+        const x = 270 + i * 86 + sx;
+        food(g, f, x, 122, 26);
+        if (i < G.idx) { g.strokeStyle = "#1d7a3c"; g.lineWidth = 5; g.beginPath(); g.moveTo(x - 16, 122); g.lineTo(x - 4, 136); g.lineTo(x + 20, 104); g.stroke(); }
+      });
+      // tray
+      g.fillStyle = "#8d6e63"; g.fillRect(200, 250, 240, 40);
+      for (let i = 0; i < G.idx; i++) food(g, G.order[i], 230 + i * 56, 268, 18);
+      // buttons
+      FOODS.forEach((f, i) => {
+        g.fillStyle = "#fff"; g.fillRect(btnX(i), 304, 100, 84);
+        g.strokeStyle = "#90a4ae"; g.lineWidth = 2; g.strokeRect(btnX(i), 304, 100, 84);
+        food(g, f, btnX(i) + 50, 340, 26);
+        g.fillStyle = "#777"; g.font = "8px 'Press Start 2P', monospace"; g.textAlign = "center"; g.fillText(String(i + 1), btnX(i) + 50, 380); g.textAlign = "left";
+      });
+      hudText(g, `ORDERS ${G.done}`, `${Math.ceil(G.t)}s`);
+      drawPops(g, G.pops, dt);
+    };
+    return G;
+  }
+};
+
+// small drawing helpers
+function mix(a, b, t) {
+  const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+  const ch = s => Math.round(((pa >> s) & 255) * (1 - t) + ((pb >> s) & 255) * t);
+  return `rgb(${ch(16)},${ch(8)},${ch(0)})`;
+}
+function star(g, x, y, r, c) {
+  g.fillStyle = c; g.beginPath();
+  for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); }
+  g.fill(); g.strokeStyle = "#a07800"; g.lineWidth = 2; g.stroke();
+}
+function bubble(g, x, y, text, color) {
+  g.font = "9px 'Press Start 2P', monospace";
+  const w = g.measureText(text).width + 14;
+  g.fillStyle = "#fff"; g.fillRect(x - w / 2, y - 12, w, 22);
+  g.strokeStyle = color; g.lineWidth = 2; g.strokeRect(x - w / 2, y - 12, w, 22);
+  g.fillStyle = color; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(text, x, y); g.textAlign = "left";
+}
+function tshirt(g, x, y) {
+  g.fillStyle = "#d00000";
+  g.fillRect(x - 22, y - 20, 44, 44); g.fillRect(x - 36, y - 20, 16, 16); g.fillRect(x + 20, y - 20, 16, 16);
+  g.fillStyle = "#fff"; g.font = "9px 'Press Start 2P', monospace"; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("FREE", x, y + 2); g.textAlign = "left";
+}
+function food(g, f, x, y, s) {
+  if (f === "burger") {
+    g.fillStyle = "#d9a05b"; g.beginPath(); g.ellipse(x, y - s * .25, s, s * .55, 0, Math.PI, 0); g.fill();
+    g.fillStyle = "#4caf50"; g.fillRect(x - s, y - s * .25, s * 2, s * .2);
+    g.fillStyle = "#6d3b1f"; g.fillRect(x - s * .95, y - s * .05, s * 1.9, s * .35);
+    g.fillStyle = "#d9a05b"; g.fillRect(x - s * .9, y + s * .3, s * 1.8, s * .3);
+  } else if (f === "fries") {
+    g.fillStyle = "#f2c200"; for (let i = -3; i <= 3; i++) g.fillRect(x + i * s * .22 - 2, y - s * 1, 5, s * .9);
+    g.fillStyle = "#d00000"; g.beginPath(); g.moveTo(x - s * .8, y - s * .3); g.lineTo(x + s * .8, y - s * .3); g.lineTo(x + s * .6, y + s * .7); g.lineTo(x - s * .6, y + s * .7); g.fill();
+  } else if (f === "salad") {
+    g.fillStyle = "#43a047"; g.beginPath(); g.arc(x, y, s * .8, Math.PI, 0); g.fill();
+    g.fillStyle = "#e53935"; g.fillRect(x - s * .4, y - s * .45, 6, 6); g.fillRect(x + s * .2, y - s * .3, 6, 6);
+    g.fillStyle = "#fff"; g.beginPath(); g.ellipse(x, y, s, s * .55, 0, 0, Math.PI); g.fill(); g.fillRect(x - s, y - 2, s * 2, 4);
+  } else if (f === "pizza") {
+    g.fillStyle = "#f6c453"; g.beginPath(); g.moveTo(x - s * .8, y - s * .7); g.lineTo(x + s * .8, y - s * .7); g.lineTo(x, y + s * .8); g.fill();
+    g.fillStyle = "#c58b3a"; g.fillRect(x - s * .85, y - s * .85, s * 1.7, s * .25);
+    g.fillStyle = "#c62828"; g.beginPath(); g.arc(x - s * .25, y - s * .25, s * .15, 0, 7); g.arc(x + s * .2, y - s * .3, s * .15, 0, 7); g.fill(); g.beginPath(); g.arc(x, y + s * .2, s * .13, 0, 7); g.fill();
+  } else if (f === "soda") {
+    g.fillStyle = "#d00000"; g.beginPath(); g.moveTo(x - s * .55, y - s * .7); g.lineTo(x + s * .55, y - s * .7); g.lineTo(x + s * .42, y + s * .8); g.lineTo(x - s * .42, y + s * .8); g.fill();
+    g.fillStyle = "#fff"; g.fillRect(x - s * .5, y - s * .1, s, s * .25); g.fillRect(x - s * .6, y - s * .85, s * 1.2, s * .2);
+    g.fillStyle = "#333"; g.fillRect(x + s * .1, y - s * 1.3, 3, s * .5);
+  }
+}
+
+// ===========================================================================
+// RACES: one per year, plus Graduation Day as the final boss
+// w = how much each stat adds to your running speed in that race.
+// ===========================================================================
+const RACE_LEN = 3000;
+const RACES = [
+  { id: "campus", n: "Lost on City Campus", kick: "Freshman year final race", theme: "campus", sky: ["#f7b267", "#bfe0f5"],
+    blurb: "Your 8:30 a.m. class is across campus and you overslept. Race three classmates there.",
+    start: null, finish: "8:30 CLASS", w: { stamina: 1 }, speeds: [112, 122, 132],
+    obs: ["squirrel", "squirrel", "cone", "scooter", "tour"], sc: ["SHORTCUT THROUGH THE UNION!", "CUT ACROSS THE GREENSPACE!"],
+    rivals: ["Tyler", "Madison", "Josh"],
+    win: "You slid into your seat at 8:29. Your professor didn't even look up.", lose: "You walked in late. Everyone turned around." },
+  { id: "shuttle", n: "The East Campus Shuttle", kick: "Sophomore year final race", theme: "east", sky: ["#7fc3ee", "#dff0fa"],
+    blurb: "You missed the shuttle to your East Campus lab. Beat it there on foot, along with two classmates who also missed it.",
+    start: "CITY CAMPUS", finish: "EAST CAMPUS LAB", w: { stamina: .7, brains: .45 }, speeds: [130, 140, 150],
+    obs: ["goose", "goose", "puddle", "cone", "hay"], sc: ["CUT THROUGH THE PARKING LOT!", "HOP THE FENCE BY THE FIELDS!"],
+    rivals: ["The Shuttle", "Madison", "Brooke"],
+    win: "You beat the shuttle to the lab. The bus driver looked personally offended.", lose: "The shuttle beat you. The driver waved as it passed." },
+  { id: "internship", n: "The Internship Hunt", kick: "Junior year final race", theme: "campus", sky: ["#8fc7ee", "#e8f4fb"],
+    blurb: "One paid summer internship. The recruiter's booth at the Career Fair closes in five minutes.",
+    start: "NEBRASKA UNION", finish: "RECRUITER BOOTH", w: { stamina: .55, social: .6 }, speeds: [138, 148, 158],
+    obs: ["line", "swag", "briefcase", "cone"], sc: ["CUT THROUGH THE FOOD COURT!", "TAKE THE BACK HALLWAY!"],
+    rivals: ["Tyler", "Priya", "Josh"],
+    win: "You handed over your résumé first. The recruiter said “we'll be in touch,” and for once they meant it.",
+    lose: "The booth was packing up when you got there. They gave you a free pen." },
+  { id: "finals", n: "Finals Week at Love Library", kick: "Senior year final race", theme: "night", sky: ["#0f1a3a", "#2e4475"],
+    blurb: "It's the last finals week of your life, and there's exactly one open study table left in Love Library.",
+    start: "YOUR APARTMENT", finish: "LOVE LIBRARY", w: { stamina: .55, brains: .6 }, speeds: [150, 160, 170],
+    obs: ["cart", "sleeper", "squirrel", "cone"], sc: ["SHORTCUT THROUGH THE UNION!", "CUT ACROSS THE GREENSPACE!"],
+    rivals: ["Madison", "Priya", "Tyler"],
+    win: "You claimed the last table. Someone sighed loudly. You did not care.", lose: "Someone else got the table. You studied in a stairwell." },
+  { id: "graduation", n: "Graduation Day", kick: "The final boss", theme: "arena", sky: ["#9fd0f0", "#eaf5fc"],
+    blurb: "They're about to call your name at Pinnacle Bank Arena, and you're still in the parking garage. Dodge a surprise account hold, a parking ticket and a missing credit on the way to the stage.",
+    start: "PARKING GARAGE", finish: "THE STAGE", w: { stamina: .32, brains: .32, social: .32, wallet: .32 }, speeds: [146, 156, 166],
+    obs: ["hold", "ticket", "credit", "cone"], sc: ["THROUGH THE CONCOURSE!", "SKIP THE PHOTO LINE!"],
+    rivals: ["Tyler", "Madison", "Josh"],
+    win: "", lose: "They called your name and you weren't there yet. Luckily, you get another shot." }
+];
+const OBS_TEXT = { squirrel: "SQUIRREL!", cone: "OOF!", scooter: "SCOOTER!", tour: "CAMPUS TOUR!", goose: "GOOSE!", puddle: "SPLASH!", hay: "HAY BALE!",
+  line: "LONG LINE!", swag: "FREE PENS!", briefcase: "OOF!", cart: "BOOK CART!", sleeper: "SORRY!", hold: "ACCOUNT HOLD!", ticket: "PARKING TICKET!", credit: "MISSING CREDIT!" };
+const MOVING = { scooter: 40, goose: 25 };
+const rivalLooks = new Map();
+function rivalLook(name) {
+  if (!rivalLooks.has(name)) rivalLooks.set(name, randomLook());
+  return rivalLooks.get(name);
+}
+function raceCfg() { return S.phase === "grad" ? RACES[4] : RACES[S.year - 1]; }
+function statWords(w) {
+  const nm = { stamina: "Stamina", brains: "Brains", social: "Social", wallet: "Wallet" };
+  const ks = Object.keys(w).map(k => nm[k]);
+  return ks.length === 1 ? ks[0] : ks.length === 2 ? ks.join(" and ") : "All four stats";
+}
+function makeRace() {
+  const st = S.stats, m = MAJOR[S.major], C = raceCfg();
+  const R = {
+    title: "race", C, t: -1.6, finished: false, pops: [], shortcuts: [], obstacles: [],
+    p: { x: 0, jump: 0, stun: 0, boost: 0, frameT: 0, done: false, time: 0 },
+    rivals: C.rivals.map((n, i) => ({ n, bus: n === "The Shuttle", x: 0, v: C.speeds[i] + rand(-2, 2), stumble: 0, look: rivalLook(n), done: false, time: 0, lane: i })),
+    nextCheer: 4, autoShort: m.id === "cs", startLabel: C.start || HALLS.find(h => h.id === S.hall).n.toUpperCase()
+  };
+  R.baseV = 70 + Object.entries(C.w).reduce((a, [k, w]) => a + w * st[k], 0);
+  R.baseV *= 1 + (S.phase === "grad" ? (S.gradBoost || 0) : (S.routeBoost || 0));
+  R.window = Math.min(2.6, .9 + st.brains * .02);
+  R.cheer = .12 + st.social / 140;
+  R.shortcuts = [{ x: RACE_LEN * .33, n: C.sc[0], state: 0 }, { x: RACE_LEN * .68, n: C.sc[1], state: 0 }];
+  for (let x = 380; x < RACE_LEN - 160; x += rand(230, 380)) {
+    if (R.shortcuts.some(s => Math.abs(s.x - x) < 200)) continue;
+    R.obstacles.push({ x, k: pick(C.obs), hit: false });
+  }
+  return R;
+}
+function startRace() {
+  const R = makeRace(), C = R.C, grad = S.phase === "grad";
+  G = R; gRunning = false;
+  show("sPlay");
+  $("#playNote").textContent = `${statWords(C.w)} set${Object.keys(C.w).length === 1 ? "s" : ""} your speed · Brains gives you more time to take shortcuts · Social gets friends cheering you on.`;
+  raceDraw(R, gg, 0);
+  const goal = grad ? "<b>Finish in the top 2</b> to walk across the stage." : `<b>Finish in the top 2</b> to pass ${YEARS[S.year - 1].toLowerCase()} year.`;
+  const boost = grad && S.gradBoost ? `<p style="font-size:12px;color:var(--good)">Your family is cheering louder: +${Math.round(S.gradBoost * 100)}% speed.</p>` : "";
+  panel(`<div class="kick">${C.kick}</div><h3>${C.n}</h3><p>${C.blurb} ${goal}</p>${boost}
+    <div class="ctl">Tap / click / Space to <b>jump</b> over anything in your way.<br>When a <b>SHORTCUT</b> sign appears, tap fast to take it.<br>Your speed in this race comes from <b>${statWords(C.w)}</b>.</div>
+    <button class="btn big">Ready</button>`).querySelector("button").addEventListener("click", () => { $("#panel").hidden = true; gRunning = true; });
+}
+function raceInput() {
+  const R = G;
+  if (R.t < 0 || R.p.done) return;
+  const sc = R.shortcuts.find(s => s.state === 1);
+  if (sc) { takeShortcut(R, sc); return; }
+  if (R.p.jump <= 0 && R.p.stun <= 0) R.p.jump = .62;
+}
+function takeShortcut(R, sc) {
+  sc.state = 2; R.p.x += 230;
+  popText(R.pops, 200, 150, "SHORTCUT!", "#2ecc71");
+}
+function raceUpdate(R, dt) {
+  R.t += dt;
+  if (R.t < 0) return;
+  const m = MAJOR[S.major];
+  const p = R.p;
+  if (!p.done) {
+    p.time += dt;
+    let v = R.baseV;
+    if (m.id === "journalism" && p.x > RACE_LEN * .7) v *= 1.12;
+    if (p.boost > 0) { v *= 1.3; p.boost -= dt; }
+    if (p.stun > 0) { p.stun -= dt; v = 0; }
+    p.x += v * dt;
+    p.frameT += dt * (v / 60);
+    if (p.jump > 0) p.jump -= dt;
+    // cheers from friends
+    R.nextCheer -= dt;
+    if (R.nextCheer <= 0) {
+      R.nextCheer = 3.5;
+      if (Math.random() < R.cheer) { p.boost = 1.6; popText(R.pops, 200, 120, `FRIEND: “GO ${(S.name || "YOU").toUpperCase()}!”`, "#f2c200"); }
+    }
+    // obstacles
+    const py = jumpY(p);
+    for (const o of R.obstacles) {
+      if (o.hit) continue;
+      if (MOVING[o.k]) o.x -= MOVING[o.k] * dt;
+      if (o.x > p.x - 14 && o.x < p.x + 22 && py < 26) {
+        o.hit = true;
+        p.stun = ((o.k === "squirrel" || o.k === "goose") && m.id === "animalsci") ? .15 : .65;
+        p.jump = 0;
+        popText(R.pops, 200, 200, OBS_TEXT[o.k] || "OOF!", "#ff5a5a");
+      } else if (o.x < p.x - 14) o.hit = true;
+    }
+    // shortcuts
+    for (const s of R.shortcuts) {
+      if (s.state === 0 && p.x > s.x - 40) {
+        if (R.autoShort) { R.autoShort = false; takeShortcut(R, s); popText(R.pops, 200, 175, "STACK OVERFLOW PERK", "#3fa9f5"); }
+        else { s.state = 1; s.left = R.window; }
+      }
+      if (s.state === 1) { s.left -= dt; if (s.left <= 0) { s.state = 3; popText(R.pops, 200, 150, "MISSED IT", "#ff5a5a"); } }
+    }
+    if (p.x >= RACE_LEN) { p.done = true; p.x = RACE_LEN; }
+  }
+  // rivals
+  for (const r of R.rivals) {
+    if (r.done) continue;
+    r.time += dt;
+    if (r.stumble > 0) r.stumble -= dt;
+    else { r.x += r.v * dt; if (!r.bus && Math.random() < dt * .12) r.stumble = .5; if (r.bus && Math.random() < dt * .08) r.stumble = 1.2; }
+    if (r.x >= RACE_LEN) { r.done = true; r.x = RACE_LEN; }
+  }
+  if (p.done && !R.finished) {
+    R.finished = true;
+    R.place = 1 + R.rivals.filter(r => (r.done ? r.time : r.time + (RACE_LEN - r.x) / r.v) < p.time).length;
+    R.endIn = 1.4;
+  }
+  if (R.finished) { R.endIn -= dt; if (R.endIn <= 0 && gRunning) finishRace(R); }
+}
+function jumpY(p) { return p.jump > 0 ? Math.sin(Math.PI * (1 - p.jump / .62)) * 78 : 0; }
+
+function drawScenery(g, R, scroll) {
+  const th = R.C.theme;
+  if (th === "east") {
+    const span = 900 * .8;
+    g.fillStyle = "#8cbf6a"; g.beginPath(); g.ellipse(GW * .3, 250, 420, 70, 0, Math.PI, 0); g.ellipse(GW * .9, 250, 380, 60, 0, Math.PI, 0); g.fill();
+    for (let base = -(scroll % span) - span; base < GW + span; base += span) {
+      barn(g, base + 40, 238); tree(g, base + 260, 250, .8);
+      g.fillStyle = "#b9b9b9"; g.fillRect(base + 330, 120, 34, 120); g.beginPath(); g.arc(base + 347, 120, 17, Math.PI, 0); g.fill();
+      bldg(g, base + 420, 140, 170, 100, "#b8663f", .8); tree(g, base + 650, 250, .8);
+      g.fillStyle = "#fff"; for (let fx = base; fx < base + span; fx += 24) g.fillRect(fx, 226, 3, 16); g.fillRect(base, 230, span, 2);
+    }
+  } else {
+    drawCampus(g, scroll, GW, 250, .8);
+    if (th === "night") {
+      g.fillStyle = "rgba(10,18,45,.5)"; g.fillRect(0, 0, GW, 262);
+      g.fillStyle = "#fff"; for (let i = 0; i < 40; i++) g.fillRect((i * 97 + 13) % GW, (i * 53) % 110 + 34, 2, 2);
+      g.fillStyle = "#f6f1c7"; g.beginPath(); g.arc(560, 70, 18, 0, 7); g.fill();
+    }
+  }
+}
+function barn(g, x, ground) {
+  g.fillStyle = "#b3261e"; g.fillRect(x, ground - 80, 120, 80);
+  g.beginPath(); g.moveTo(x - 8, ground - 80); g.lineTo(x + 60, ground - 125); g.lineTo(x + 128, ground - 80); g.fill();
+  g.fillStyle = "#fff"; g.fillRect(x + 42, ground - 52, 36, 52); g.fillStyle = "#b3261e"; g.fillRect(x + 46, ground - 48, 28, 48);
+  g.strokeStyle = "#fff"; g.lineWidth = 3; g.beginPath(); g.moveTo(x + 46, ground - 48); g.lineTo(x + 74, ground); g.moveTo(x + 74, ground - 48); g.lineTo(x + 46, ground); g.stroke();
+}
+function raceDraw(R, g, dt) {
+  const p = R.p, k = 1.6, PX = 170, C = R.C;
+  const toS = wx => (wx - p.x) * k + PX;
+  const sky = g.createLinearGradient(0, 0, 0, GH); sky.addColorStop(0, C.sky[0]); sky.addColorStop(.6, C.sky[1]); g.fillStyle = sky; g.fillRect(0, 0, GW, GH);
+  drawScenery(g, R, p.x * k * .35);
+  const east = C.theme === "east", night = C.theme === "night";
+  g.fillStyle = east ? "#6f9d50" : night ? "#3f5f37" : "#6f9d50"; g.fillRect(0, 240, GW, 30);
+  g.fillStyle = east ? "#cbb48a" : night ? "#8f8778" : "#d8cbb5"; g.fillRect(0, 262, GW, 138);
+  g.fillStyle = east ? "#b89f72" : night ? "#7d7566" : "#c8b99e"; for (let x = -((p.x * k) % 60); x < GW; x += 60) { g.fillRect(x, 300, 30, 2); g.fillRect(x + 20, 340, 30, 2); }
+  // start building
+  const sx0 = toS(0);
+  if (sx0 > -200) {
+    g.fillStyle = C.theme === "arena" ? "#6d7b88" : "#a8553f"; g.fillRect(sx0 - 165, 110, 150, 152);
+    g.fillStyle = night ? "#f4d27a" : "#3e5f78"; for (let wy = 140; wy < 230; wy += 30) for (let wx = sx0 - 150; wx < sx0 - 35; wx += 30) g.fillRect(wx, wy, 16, 18);
+    g.fillStyle = "#fff"; g.fillRect(sx0 - 160, 116, 140, 18);
+    g.fillStyle = "#a8553f"; g.font = "7px 'Press Start 2P', monospace"; g.textAlign = "center"; g.fillText(R.startLabel, sx0 - 90, 129); g.textAlign = "left";
+  }
+  // finish building
+  const fx = toS(RACE_LEN);
+  if (fx < GW + 260) {
+    if (C.theme === "arena") {
+      g.fillStyle = "#5d6d7e"; g.fillRect(fx + 10, 110, 260, 155); g.beginPath(); g.ellipse(fx + 140, 112, 130, 34, 0, Math.PI, 0); g.fill();
+      g.fillStyle = "#9fb3c8"; for (let i = 0; i < 6; i++) g.fillRect(fx + 24 + i * 40, 150, 26, 70);
+      g.fillStyle = "#d00000"; g.fillRect(fx + 70, 228, 140, 37);
+    } else if (east) {
+      g.fillStyle = "#c06a52"; g.fillRect(fx + 10, 110, 220, 155); g.fillStyle = "#3e5f78"; for (let i = 0; i < 6; i++) g.fillRect(fx + 22 + i * 34, 140, 20, 24);
+      g.fillStyle = "#3b2414"; g.fillRect(fx + 90, 205, 50, 60);
+    } else {
+      g.fillStyle = "#9a4a36"; g.fillRect(fx + 10, 90, 220, 175);
+      g.fillStyle = "#f3eee4"; for (let i = 0; i < 5; i++) g.fillRect(fx + 24 + i * 42, 150, 10, 115);
+      g.fillStyle = night ? "#f4d27a" : "#3b2414"; g.fillRect(fx + 90, 200, 50, 65);
+    }
+    g.font = "9px 'Press Start 2P', monospace";
+    const tw = g.measureText(C.finish).width + 20;
+    g.fillStyle = "#fff"; g.fillRect(fx + 120 - tw / 2, 100, tw, 26); g.fillStyle = "#d00000"; g.textAlign = "center"; g.fillText(C.finish, fx + 120, 118); g.textAlign = "left";
+    g.fillStyle = "#111"; for (let y = 262; y < 400; y += 16) { g.fillRect(fx, y, 8, 8); g.fillRect(fx + 8, y + 8, 8, 8); }
+    g.fillStyle = "#fff"; for (let y = 262; y < 400; y += 16) { g.fillRect(fx + 8, y, 8, 8); g.fillRect(fx, y + 8, 8, 8); }
+  }
+  // rivals (back lanes)
+  const lanes = [278, 310, 342], RPX = 1.5;
+  R.rivals.slice().sort((a, b) => a.lane - b.lane).forEach(r => {
+    const x = toS(r.x);
+    const fr = r.done || R.t < 0 ? 0 : (r.stumble > 0 ? 0 : (Math.floor(R.t * 10 + r.lane) % 2) + 1);
+    if (x > -140 && x < GW + 20) {
+      g.fillStyle = "rgba(0,0,0,.15)"; g.beginPath(); g.ellipse(x, lanes[r.lane], r.bus ? 60 : 20, 5, 0, 0, 7); g.fill();
+      if (r.bus) bus(g, x, lanes[r.lane], r.stumble > 0);
+      else drawChar(g, r.look, x - 23 * RPX, lanes[r.lane] - 41 * RPX, RPX, fr);
+      g.font = "7px 'Press Start 2P', monospace"; g.textAlign = "center";
+      const tw = g.measureText(r.n).width + 6, lx = r.bus ? x + 62 : x + 22;
+      g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(lx, lanes[r.lane] - 50, tw, 11);
+      g.fillStyle = "#fff"; g.fillText(r.n.toUpperCase(), lx + tw / 2, lanes[r.lane] - 42); g.textAlign = "left";
+    } else if (x >= GW + 20) {
+      g.font = "8px 'Press Start 2P', monospace";
+      const tw = g.measureText(r.n + " ▶").width + 8;
+      g.fillStyle = "rgba(0,0,0,.6)"; g.fillRect(GW - tw - 4, lanes[r.lane] - 60, tw, 16);
+      g.fillStyle = "#fff"; g.fillText(r.n.toUpperCase() + " ▶", GW - tw, lanes[r.lane] - 49);
+    }
+  });
+  // obstacles (player lane)
+  const ground = 378;
+  for (const o of R.obstacles) {
+    const x = toS(o.x);
+    if (x < -60 || x > GW + 60 || (o.hit && o.x < p.x - 14)) continue;
+    obstacle(g, o.k, x, ground, R.t);
+  }
+  // player
+  const fr = p.done || R.t < 0 || p.stun > 0 ? 0 : (Math.floor(p.frameT * 5) % 2) + 1;
+  const jy = jumpY(p);
+  g.fillStyle = "rgba(0,0,0,.2)"; g.beginPath(); g.ellipse(PX, ground, 30 - jy / 6, 7, 0, 0, 7); g.fill();
+  if (p.boost > 0) { g.fillStyle = "rgba(242,194,0,.35)"; g.beginPath(); g.arc(PX, ground - 50 - jy, 54, 0, 7); g.fill(); }
+  drawChar(g, S.look, PX - 46, ground - 41 * 2 - jy + 2, 2, fr);
+  if (p.stun > 0) { for (let i = 0; i < 3; i++) { const a = R.t * 8 + i * 2.1; star(g, PX + Math.cos(a) * 22, ground - 96 - jy + Math.sin(a) * 6, 6, "#ffd84a"); } }
+  // shortcut prompt
+  const sc = R.shortcuts.find(s => s.state === 1);
+  if (sc) {
+    g.fillStyle = "#1d7a3c"; g.fillRect(130, 60, 380, 70); g.strokeStyle = "#fff"; g.lineWidth = 3; g.strokeRect(134, 64, 372, 62);
+    g.fillStyle = "#fff"; g.font = "10px 'Press Start 2P', monospace"; g.textAlign = "center"; g.fillText(sc.n, 320, 88); g.font = "11px 'Press Start 2P', monospace"; g.fillText("TAP NOW!", 320, 110);
+    g.fillStyle = "#f2c200"; g.fillRect(140, 122, 360 * (sc.left / R.window), 4); g.textAlign = "left";
+  }
+  // progress bar
+  g.fillStyle = "rgba(0,0,0,.55)"; g.fillRect(0, 0, GW, 30);
+  g.fillStyle = "#555"; g.fillRect(90, 13, 460, 4);
+  for (const r of R.rivals) { g.fillStyle = "#bbb"; g.fillRect(90 + 460 * (r.x / RACE_LEN) - 3, 9, 6, 12); }
+  g.fillStyle = "#d00000"; g.fillRect(90 + 460 * (p.x / RACE_LEN) - 5, 6, 10, 18); g.strokeStyle = "#fff"; g.lineWidth = 2; g.strokeRect(90 + 460 * (p.x / RACE_LEN) - 5, 6, 10, 18);
+  g.fillStyle = "#fff"; g.font = "10px 'Press Start 2P', monospace"; g.textBaseline = "middle"; g.fillText("START", 10, 16); g.fillText("GOAL", 566, 16);
+  if (R.t < 0) {
+    g.fillStyle = "rgba(0,0,0,.35)"; g.fillRect(0, 30, GW, GH - 30);
+    g.fillStyle = "#fff"; g.font = "36px 'Press Start 2P', monospace"; g.textAlign = "center"; g.fillText(R.t < -1.1 ? "3" : R.t < -.55 ? "2" : "1", GW / 2, 200); g.textAlign = "left";
+  } else if (R.t < .5) { g.fillStyle = "#fff"; g.font = "36px 'Press Start 2P', monospace"; g.textAlign = "center"; g.fillText("GO!", GW / 2, 200); g.textAlign = "left"; }
+  if (R.finished) {
+    g.fillStyle = "#fff"; g.font = "28px 'Press Start 2P', monospace"; g.textAlign = "center";
+    g.fillText(["", "1ST!", "2ND!", "3RD", "4TH"][R.place], GW / 2, 190); g.textAlign = "left";
+  }
+  g.textBaseline = "alphabetic";
+  drawPops(g, R.pops, dt);
+}
+function bus(g, x, ground, stopped) {
+  g.fillStyle = "#d00000"; g.fillRect(x - 58, ground - 50, 116, 40);
+  g.fillStyle = "#f5f1e7"; g.fillRect(x - 58, ground - 26, 116, 6);
+  g.fillStyle = "#bfe0f5"; for (let i = 0; i < 5; i++) g.fillRect(x - 50 + i * 20, ground - 44, 14, 12);
+  g.fillStyle = "#222"; g.beginPath(); g.arc(x - 34, ground - 8, 9, 0, 7); g.arc(x + 34, ground - 8, 9, 0, 7); g.fill();
+  g.fillStyle = "#fff"; g.font = "6px 'Press Start 2P', monospace"; g.fillText("SHUTTLE", x - 50, ground - 13);
+  if (stopped) { g.fillStyle = "#f2c200"; g.fillRect(x + 50, ground - 46, 6, 6); }
+}
+function obstacle(g, k, x, y, t) {
+  if (k === "squirrel") {
+    g.fillStyle = "#8a5a33"; g.fillRect(x - 10, y - 16, 18, 12); g.fillRect(x + 4, y - 22, 9, 9);
+    g.fillStyle = "#a8743f"; g.beginPath(); g.ellipse(x - 16, y - 24, 8, 14, -.4, 0, 7); g.fill();
+    g.fillStyle = "#111"; g.fillRect(x + 9, y - 20, 2, 2); g.fillStyle = "#8a5a33"; g.fillRect(x - 8, y - 4, 4, 4); g.fillRect(x + 2, y - 4, 4, 4);
+  } else if (k === "cone") {
+    g.fillStyle = "#ff7a1a"; g.beginPath(); g.moveTo(x, y - 34); g.lineTo(x + 13, y - 4); g.lineTo(x - 13, y - 4); g.fill();
+    g.fillStyle = "#fff"; g.fillRect(x - 7, y - 20, 14, 5); g.fillStyle = "#e05a00"; g.fillRect(x - 17, y - 5, 34, 5);
+  } else if (k === "scooter") {
+    g.fillStyle = "#2b2b2b"; g.beginPath(); g.arc(x - 14, y - 6, 6, 0, 7); g.arc(x + 14, y - 6, 6, 0, 7); g.fill();
+    g.fillStyle = "#3fa9f5"; g.fillRect(x - 16, y - 12, 32, 4); g.fillRect(x - 16, y - 40, 4, 30); g.fillRect(x - 22, y - 42, 14, 4);
+  } else if (k === "tour") {
+    g.fillStyle = "#d00000"; g.fillRect(x - 3, y - 50, 3, 50); g.fillStyle = "#fff"; g.fillRect(x, y - 50, 26, 16);
+    g.fillStyle = "#d00000"; g.font = "7px 'Press Start 2P', monospace"; g.fillText("TOUR", x + 2, y - 39);
+    g.fillStyle = "#555"; g.fillRect(x - 14, y - 26, 10, 26); g.fillStyle = "#e0b48a"; g.fillRect(x - 14, y - 34, 10, 8);
+  } else if (k === "goose") {
+    const flap = Math.floor(t * 6) % 2;
+    g.fillStyle = "#f4f4f4"; g.beginPath(); g.ellipse(x, y - 14, 15, 9, 0, 0, 7); g.fill();
+    g.fillStyle = "#222"; g.fillRect(x - 15, y - 34, 4, 20); g.fillRect(x - 18, y - 38, 8, 6);
+    g.fillStyle = "#f28a1a"; g.fillRect(x - 24, y - 36, 6, 3); g.fillRect(x - 4, y - 6, 3, 6); g.fillRect(x + 4, y - 6, 3, 6);
+    g.fillStyle = "#d8d8d8"; g.fillRect(x - 4, y - 22 - flap * 4, 16, 6);
+  } else if (k === "puddle") {
+    g.fillStyle = "rgba(70,130,190,.75)"; g.beginPath(); g.ellipse(x, y - 3, 24, 6, 0, 0, 7); g.fill();
+    g.fillStyle = "rgba(255,255,255,.6)"; g.fillRect(x - 10, y - 5, 8, 2);
+  } else if (k === "hay") {
+    g.fillStyle = "#e3c25a"; g.fillRect(x - 18, y - 26, 36, 26); g.fillStyle = "#c9a43c"; for (let i = 0; i < 4; i++) g.fillRect(x - 18, y - 22 + i * 6, 36, 2);
+    g.fillStyle = "#8a6a2a"; g.fillRect(x - 8, y - 26, 2, 26); g.fillRect(x + 6, y - 26, 2, 26);
+  } else if (k === "line") {
+    for (let i = 0; i < 3; i++) { g.fillStyle = ["#3b6fb6", "#555", "#2f6b45"][i]; g.fillRect(x - 20 + i * 14, y - 30, 10, 30); g.fillStyle = "#e0b48a"; g.fillRect(x - 20 + i * 14, y - 38, 10, 8); }
+  } else if (k === "swag") {
+    g.fillStyle = "#6b4a2e"; g.fillRect(x - 20, y - 22, 40, 4); g.fillRect(x - 18, y - 18, 4, 18); g.fillRect(x + 14, y - 18, 4, 18);
+    g.fillStyle = "#3b6fb6"; for (let i = 0; i < 5; i++) g.fillRect(x - 16 + i * 7, y - 30, 2, 8);
+    g.fillStyle = "#fff"; g.fillRect(x - 12, y - 42, 24, 10); g.fillStyle = "#d00000"; g.font = "6px 'Press Start 2P', monospace"; g.fillText("FREE", x - 11, y - 34);
+  } else if (k === "briefcase") {
+    g.fillStyle = "#6b3f22"; g.fillRect(x - 16, y - 22, 32, 22); g.fillStyle = "#4a2a16"; g.fillRect(x - 6, y - 28, 12, 3); g.fillRect(x - 6, y - 28, 2, 6); g.fillRect(x + 4, y - 28, 2, 6);
+    g.fillStyle = "#d4af37"; g.fillRect(x - 2, y - 14, 4, 3);
+  } else if (k === "cart") {
+    g.fillStyle = "#777"; g.fillRect(x - 20, y - 36, 4, 30); g.fillRect(x + 16, y - 36, 4, 30); g.fillRect(x - 20, y - 22, 40, 3); g.fillRect(x - 20, y - 8, 40, 3);
+    const cs = ["#d00000", "#3b6fb6", "#2f6b45", "#f2c200", "#7a4dc2"];
+    for (let i = 0; i < 5; i++) { g.fillStyle = cs[i]; g.fillRect(x - 15 + i * 6, y - 34, 5, 12); g.fillStyle = cs[4 - i]; g.fillRect(x - 15 + i * 6, y - 20, 5, 12); }
+    g.fillStyle = "#222"; g.beginPath(); g.arc(x - 14, y - 3, 3, 0, 7); g.arc(x + 14, y - 3, 3, 0, 7); g.fill();
+  } else if (k === "sleeper") {
+    g.fillStyle = "#d00000"; g.fillRect(x - 22, y - 12, 30, 12); g.fillStyle = "#3b5c8f"; g.fillRect(x + 8, y - 10, 16, 10);
+    g.fillStyle = "#e0b48a"; g.fillRect(x - 32, y - 14, 11, 11); g.fillStyle = "#4b2e1a"; g.fillRect(x - 33, y - 16, 12, 4);
+    g.fillStyle = "#3b6fb6"; g.font = "8px 'Press Start 2P', monospace"; g.fillText("z", x - 30, y - 22 - (t * 8 % 8)); g.fillText("Z", x - 22, y - 32 - (t * 8 % 8));
+  } else if (k === "hold" || k === "credit") {
+    g.fillStyle = "#555"; g.fillRect(x - 2, y - 34, 4, 34);
+    g.fillStyle = k === "hold" ? "#d00000" : "#f2c200"; g.fillRect(x - 22, y - 46, 44, 22);
+    g.fillStyle = k === "hold" ? "#fff" : "#111"; g.font = "6px 'Press Start 2P', monospace"; g.textAlign = "center";
+    g.fillText(k === "hold" ? "HOLD" : "-3 CR", x, y - 32); g.textAlign = "left";
+  } else if (k === "ticket") {
+    const bob = Math.sin(t * 5 + x) * 3;
+    g.fillStyle = "#ffe066"; g.fillRect(x - 12, y - 30 + bob, 24, 16); g.fillStyle = "#d00000"; g.fillRect(x - 12, y - 30 + bob, 24, 4);
+    g.fillStyle = "#555"; g.fillRect(x - 8, y - 22 + bob, 16, 1); g.fillRect(x - 8, y - 19 + bob, 10, 1);
+  }
+}
+function finishRace(R) {
+  gRunning = false;
+  const passed = R.place <= 2, C = R.C;
+  const m = MAJOR[S.major];
+  const placeTxt = ["", "1st", "2nd", "3rd", "4th"][R.place];
+  S.raceTries++;
+  if (S.phase === "grad") {
+    if (passed) {
+      S.phase = "done"; S.look.gown = true; S.look.hand = "diploma"; save();
+      panel(`<div class="kick">You placed ${placeTxt}</div><h3>You made it to the stage!</h3><p>They called your name just as you hit the top step.</p><button class="btn big">Walk across the stage</button>`)
+        .querySelector("button").addEventListener("click", openGraduation);
+    } else {
+      S.gradBoost = Math.min(.3, (S.gradBoost || 0) + .05); save();
+      panel(`<div class="kick">You placed ${placeTxt}</div><h3>Not yet!</h3><p>${C.lose} Your family is cheering even louder now: <b>+${Math.round(S.gradBoost * 100)}% speed</b> on your next try.</p><button class="btn big">Try again</button>`)
+        .querySelector("button").addEventListener("click", startRace);
+    }
+    return;
+  }
+  if (passed) {
+    S.phase = "year";
+    const gid = m.gear[S.year];
+    if (gid && !S.owned.includes(gid)) { S.owned.push(gid); equip(S.look, gid); }
+    S.gpas = S.gpas || [];
+    S.gpas[S.year - 1] = yearGpa();
+    save();
+    panel(`<div class="kick">You placed ${placeTxt}</div><h3>You did it!</h3><p>${C.win} ${YEARS[S.year - 1]} year: <b>passed</b>.</p><button class="btn big">See your report card</button>`)
+      .querySelector("button").addEventListener("click", openYearEnd);
+    return;
+  }
+  const free = S.encore;
+  if (free) S.encore = false;
+  S.routeBoost = Math.min(.2, (S.routeBoost || 0) + .04);
+  const line = (free
+    ? `You placed ${placeTxt}. Encore! Your Music / Theatre perk gives you another shot without losing a week.`
+    : `You placed ${placeTxt}. ${C.lose} Train some more and try again.`) + ` You know the route better now: +${Math.round(S.routeBoost * 100)}% speed next time.`;
+  panel(`<div class="kick">You placed ${placeTxt}</div><h3>Not this time</h3><p>${line}</p>
+    <p style="font-size:12px;color:var(--muted)">Tip: in this race your speed comes from ${statWords(C.w)}. Brains gives you more time for shortcuts, and Social means more cheering boosts.</p>
+    <button class="btn big">Back to your room</button>`).querySelector("button").addEventListener("click", () => {
+      if (free) { S.msg = line; S.msgKind = "bad"; save(); openHub(); return; }
+      if (finalsForced()) { S.summer += 3; S.msg = "You didn't pass the final race, so it's summer session: three more weeks to train before you try again."; S.msgKind = "bad"; S.week++; save(); openHub(); return; }
+      endWeek(line, "bad");
+    });
+}
+
+// ---------- Year end + graduation ----------
+function yearGpa() {
+  return clamp(1.9 + S.stats.brains * .035 - (S.year - 1) * .3 + (S.sanity > 40 ? .15 : 0), 1.7, 4);
+}
+const letter = v => v >= 70 ? "A" : v >= 55 ? "A-" : v >= 42 ? "B+" : v >= 30 ? "B" : v >= 18 ? "C+" : "C";
+function reportCard(gpaLabel, gpa) {
+  return STATS.map(([k, n]) => `<div><span>${n}</span><b>${S.stats[k]} · ${letter(S.stats[k])}</b></div>`).join("") +
+    `<div><span>Sanity left</span><b>${S.sanity}</b></div><div><span>${gpaLabel}</span><b>${gpa.toFixed(2)}</b></div>`;
+}
+function openYearEnd() {
+  const m = MAJOR[S.major], y = S.year;
+  show("sYear");
+  $("#barL").textContent = `${YEARS[y - 1]} year complete`;
+  $("#yearH").textContent = `${YEARS[y - 1]} year complete`;
+  $("#yearTitle").textContent = y < 4 ? `On to ${YEARS[y].toLowerCase()} year!` : "Senior year: done!";
+  const yc = $("#yearCv").getContext("2d"); yc.clearRect(0, 0, 92, 96); drawChar(yc, S.look, 0, 0, 2, 0);
+  const gid = m.gear[y];
+  $("#yearUnlock").hidden = !gid;
+  if (gid) $("#yearUnlock").textContent = `Unlocked ${m.n} gear: ${ITEMS[gid].n}`;
+  $("#report").innerHTML = reportCard(`${YEARS[y - 1]} GPA`, (S.gpas && S.gpas[y - 1]) || yearGpa());
+  const NEXT = [
+    "Next up: sophomore year and the East Campus Shuttle race. This year your speed comes from Stamina and Brains.",
+    "Next up: junior year and the Internship Hunt. This year your speed comes from Stamina and Social.",
+    "Next up: senior year and Finals Week at Love Library. This year your speed comes from Stamina and Brains.",
+    "One thing left: Graduation Day at Pinnacle Bank Arena. Every stat counts, and you can retry as many times as it takes."
+  ];
+  $("#yearNext").textContent = NEXT[y - 1];
+  $("#bYearNext").textContent = y < 4 ? `Start ${YEARS[y].toLowerCase()} year` : "Go to Graduation Day";
+}
+$("#bYearNext").addEventListener("click", () => {
+  if (S.year >= 4) { S.phase = "grad"; save(); startRace(); return; }
+  S.year++; S.week = 1; S.summer = 0; S.encore = S.major === "music"; S.phase = "hub"; S.routeBoost = 0;
+  S.sanity = Math.min(100, S.sanity + 30); S.money += 40;
+  S.msg = `Summer's over. You worked a summer job (+$40) and actually slept (+30 Sanity). Welcome to ${YEARS[S.year - 1].toLowerCase()} year!`;
+  S.msgKind = "good";
+  save(); openHub();
+});
+$("#bYearAgain").addEventListener("click", () => { if (confirm("Start over? This student will be erased.")) { clearSave(); S = null; showTitle(); } });
+
+let confetti = [];
+function openGraduation() {
+  show("sGrad");
+  $("#barL").textContent = "Graduation Day";
+  $("#barR").textContent = "";
+  const m = MAJOR[S.major];
+  const gpas = (S.gpas || []).filter(Boolean);
+  const cum = gpas.length ? gpas.reduce((a, b) => a + b, 0) / gpas.length : yearGpa();
+  $("#gradTitle").textContent = `Congratulations, ${S.name}!`;
+  $("#gradSub").textContent = `Bachelor's degree in ${m.n === "Undeclared" ? "…something (you'll figure it out)" : m.n} · University of Nebraska-Lincoln`;
+  $("#gradReport").innerHTML = reportCard("Cumulative GPA", cum) +
+    `<div><span>${esc(m.n)} gear collected</span><b>${m.gear.filter(id => S.owned.includes(id)).length} of ${m.gear.length}</b></div>`;
+  confetti = Array.from({ length: 70 }, () => ({ x: rand(0, 360), y: rand(-240, 0), v: rand(30, 70), c: pick(["#d00000", "#f5f1e7", "#f2c200", "#ffffff"]), s: rand(3, 6) }));
+}
+const gradCv = $("#gradCv"), grg = gradCv.getContext("2d");
+function drawGrad(t, dt) {
+  const g = grg; g.imageSmoothingEnabled = false;
+  g.fillStyle = "#26324a"; g.fillRect(0, 0, 360, 240);
+  g.fillStyle = "#3a4a6a"; for (let i = 0; i < 9; i++) g.fillRect(i * 44, 30, 30, 120);
+  g.fillStyle = "#d00000"; g.fillRect(0, 180, 360, 60); g.fillStyle = "#a00000"; g.fillRect(0, 180, 360, 6);
+  g.fillStyle = "#f5f1e7"; g.fillRect(110, 12, 140, 22); g.fillStyle = "#d00000"; g.font = "8px 'Press Start 2P', monospace"; g.textAlign = "center"; g.fillText("CONGRATS, GRADS", 180, 27); g.textAlign = "left";
+  const hop = Math.abs(Math.sin(t * 3)) * 8;
+  drawChar(g, S.look, 180 - 23 * 3, 186 - 41 * 3 - hop, 3, 0);
+  for (const c of confetti) { c.y += c.v * dt; if (c.y > 240) { c.y = -10; c.x = rand(0, 360); } g.fillStyle = c.c; g.fillRect(c.x + Math.sin(t * 2 + c.v) * 6, c.y, c.s, c.s); }
+}
+$("#bGradAgain").addEventListener("click", () => { clearSave(); S = null; showTitle(); });
+
+// ===========================================================================
+// MAIN LOOP + BOOT
+// ===========================================================================
+let last = performance.now(), clock = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  step(dt);
+  requestAnimationFrame(frame);
+}
+function step(dt) {
+  clock += dt;
+  if (current === "sTitle") drawTitle(clock);
+  else if (current === "sHub" && S) drawDorm(clock);
+  else if (current === "sGrad" && S) drawGrad(clock, dt);
+  else if (current === "sCreate" && S) { const f = Math.floor(clock * 3) % 4 === 1 ? 1 : 0; if (f !== prevFrame) { prevFrame = f; drawPreview(); } }
+  else if (current === "sPlay" && G) {
+    if (G === null) {}
+    else if (G.title === "race") { if (gRunning) raceUpdate(G, dt); raceDraw(G, gg, gRunning ? dt : 0); }
+    else { if (gRunning) G.update(dt); G.draw(gg, gRunning ? dt : 0); }
+  }
+}
+// Route race input
+gameCv.addEventListener("pointerdown", () => { if (gRunning && G && G.title === "race") raceInput(); });
+document.addEventListener("keydown", ev => { if (current === "sPlay" && gRunning && G && G.title === "race" && (ev.key === " " || ev.key === "ArrowUp")) { ev.preventDefault(); raceInput(); } });
+
+function showTitle() {
+  const saved = load();
+  $("#bCont").hidden = !(saved && saved.phase && saved.phase !== "create");
+  show("sTitle");
+}
+$("#bNew").addEventListener("click", () => {
+  const saved = load();
+  if (saved && saved.phase !== "create" && !confirm("Start over? Your current student will be erased.")) return;
+  clearSave(); S = null; buildMajors("new"); show("sMajor");
+});
+$("#bCont").addEventListener("click", () => {
+  S = load(); if (!S) return;
+  S.year = S.year || 1; S.gpas = S.gpas || [];
+  if (S.phase === "year") openYearEnd(); else if (S.phase === "grad") startRace(); else if (S.phase === "done") openGraduation(); else openHub();
+});
+document.fonts && document.fonts.ready.then(() => spriteCache.clear());
+showTitle();
+requestAnimationFrame(frame);
+
+// Debug hooks for testing in the browser console.
+window.GL = { get S() { return S; }, set S(v) { S = v; }, get G() { return G; }, RACES, drawChar, makeRace, raceUpdate, MINIGAMES, openHub, startRace, openYearEnd, buildMajors, show,
+  tick(sec, dt = 1 / 30) { for (let t = 0; t < sec; t += dt) step(dt); } };
+})();
+</script>
+</body>
+</html>
